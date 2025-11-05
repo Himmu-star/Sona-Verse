@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SONAverse — Portal</title>
+  <style>
+    :root{
+      --bg1:#05041a;
+      --bg2:#1a0b3b;
+      --accent:#ff7eb6;
+      --accent-2:#b68cff;
+      --glass: rgba(255,255,255,0.06);
+      --soft: rgba(255,255,255,0.06);
+      --text:#fdeff7;
+    }
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:var(--text);}
+    body{
+      background: radial-gradient(1200px 600px at 10% 20%, rgba(182,140,255,0.08), transparent), linear-gradient(180deg,var(--bg1), var(--bg2));
+      /* Removed overflow:hidden to allow scrolling */
+      display:flex; 
+      flex-direction: column; /* Stack content vertically */
+      align-items:center; 
+      min-height:100vh; 
+    }
+    /* Subtle star field */
+    .starfield{position:fixed;inset:0;pointer-events:none;}
+    .star{position:absolute;width:2px;height:2px;border-radius:50%;background:rgba(255,255,255,0.9);opacity:0.6;animation:blink 4s infinite ease-in-out;}
+    @keyframes blink{0%,100%{opacity:0.2;}50%{opacity:1;}}
+
+    /* mist */
+    .mist{position:fixed;inset:0;background:radial-gradient(circle at 70% 30%, rgba(255,120,180,0.04), transparent 15%), radial-gradient(circle at 30% 70%, rgba(180,140,255,0.03), transparent 12%);pointer-events:none;}
+
+    /* Central container - now ensures it takes full screen height on initial load */
+    .stage{
+      position:relative;
+      z-index:3;
+      width:100%;
+      max-width:1000px;
+      padding:40px;
+      box-sizing:border-box;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: 100vh; /* Forces the stage to occupy at least one viewport height */
+    }
+
+    /* Heart portal */
+    .portal-wrap{position:relative;width:420px;height:420px;display:flex;align-items:center;justify-content:center}
+    .portal{
+      width:56%;height:56%;display:flex;align-items:center;justify-content:center;border-radius:50%;backdrop-filter:blur(6px);box-shadow:0 20px 60px rgba(0,0,0,0.6), inset 0 0 80px rgba(255,120,180,0.06);position:relative;
+    }
+
+    /* Heart SVG */
+    .heart{width:70%;height:70%;transform-origin:center;filter:drop-shadow(0 8px 30px rgba(182,140,255,0.18));}
+    .pulse{animation:heartbeat 1.6s infinite ease-in-out;}
+    @keyframes heartbeat{
+      0%{transform:scale(0.98);opacity:0.95}
+      25%{transform:scale(1.02);opacity:1}
+      50%{transform:scale(0.98)}
+      100%{transform:scale(0.98)}
+    }
+
+    /* Floating symbols */
+    .symbols{position:absolute;inset:0;display:block;pointer-events:none}
+    .sym{position:absolute;font-size:22px;opacity:0.9;animation:floaty 8s linear infinite;}
+    @keyframes floaty{0%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(18deg)}100%{transform:translateY(0) rotate(0deg)}}
+
+    /* Modal */
+    .modal{position:absolute;left:50%;top:62%;transform:translate(-50%,-50%);width:420px;max-width:92%;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border-radius:14px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,0.5);backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.04);text-align:center}
+    .modal.shake{animation:shake 0.6s ease-in-out}
+    @keyframes shake{10%,90%{transform:translate(-50%,-50%) translateX(-6px)}30%,70%{transform:translate(-50%,-50%) translateX(6px)}50%{transform:translate(-50%,-50%) translateX(-2px)}}
+
+    .modal h2{margin:0 0 8px 0;font-size:18px}
+    .modal p{margin:0 0 12px 0;color:rgba(255,255,255,0.78)}
+    .inputs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    input[type=text]{flex:1;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);outline:none;font-size:14px}
+    .btn{margin-top:12px;padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#111;font-weight:600;cursor:pointer}
+    .hint{margin-top:10px;font-size:13px;color:rgba(255,255,255,0.65)}
+    .error{margin-top:8px;color:#ffb2c9;font-weight:600}
+
+    /* New final button style after success */
+    .final-enter-btn{
+      position:absolute;
+      left:50%;
+      top:62%; /* Same starting position as modal */
+      transform:translate(-50%,-50%);
+      padding:14px 28px;
+      border-radius:12px;
+      border:none;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:#111;
+      font-weight:700;
+      font-size:18px;
+      cursor:pointer;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity 0.8s ease, transform 0.8s ease, box-shadow 0.4s ease;
+      z-index:4;
+      box-shadow: 0 10px 30px rgba(255,126,182,0); /* start transparent */
+    }
+    .final-enter-btn.show{
+        opacity: 1;
+        transform: translate(-50%,-50%) translateY(120px); /* Move down slightly */
+        box-shadow: 0 10px 30px rgba(255,126,182,0.4);
+        pointer-events:auto;
+    }
+    .final-enter-btn:hover{
+        transform: translate(-50%,-50%) translateY(118px) scale(1.02);
+    }
+    
+    /* Navbar */
+    .nav{position:fixed;top:20px;right:28px;display:flex;gap:12px;z-index:10}
+    .nav a{padding:8px 10px;border-radius:8px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);font-size:14px;color:var(--text);text-decoration:none;backdrop-filter:blur(6px)}
+    .nav a:hover{box-shadow:0 6px 18px rgba(182,140,255,0.06);transform:translateY(-2px)}
+
+    /* Footer is fixed */
+    .footer{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);opacity:0;transition:opacity 0.6s;z-index:9}
+    .footer.show{opacity:1}
+
+    /* Placeholder for content below the main portal screen */
+    .content-ext{
+        width: 100%;
+        height: 150vh; /* Adds significant scroll space */
+        z-index: 1; /* Below the fixed navbar and other UI elements */
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: 100px;
+        box-sizing: border-box;
+    }
+    .content-ext h2 {
+        font-size: 2rem;
+        color: rgba(255,255,255,0.4);
+        text-align: center;
+        max-width: 600px;
+    }
+
+    /* Page 2 placeholder (kept for context, but now hidden) */
+    .page2{display:none;} 
+
+    /* small responsive tweaks */
+    @media (max-width:520px){.portal-wrap{width:320px;height:320px}.modal{top:70%}}
+  </style>
+</head>
+<body>
+  <div class="starfield" id="starfield"></div>
+  <div class="mist"></div>
+
+  <nav class="nav">
+    <a href="#">💖 Home</a>
+    <a href="#" id="nextLink">💫 Next</a>
+    <a href="#">🕊️ About</a>
+    <a href="#" aria-disabled="true">🎁 Surprise</a>
+  </nav>
+
+  <main class="stage">
+    <div class="portal-wrap" aria-hidden="false">
+      <div class="symbols" aria-hidden="true" id="symbols"></div>
+
+      <div class="portal" role="img" aria-label="Glowing heart portal">
+        <!-- Heart SVG -->
+        <svg class="heart pulse" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#ff9ac6"/>
+              <stop offset="1" stop-color="#b68cff"/>
+            </linearGradient>
+          </defs>
+          <path d="M12 21s-7-4.8-9-7.2C-0.3 10.9 3.1 4 7.7 6.3 9.9 7.5 12 10 12 10s2.1-2.5 4.3-3.7C20.9 4 24.3 10.9 21 13.8 19 16.2 12 21 12 21z" fill="url(#g1)" opacity="0.98"/>
+        </svg>
+      </div>
+
+      <div class="modal" id="modal" role="dialog" aria-modal="true">
+        <h2>Type the nicknames to enter 💖</h2>
+        <p>Only you can open this door, Sona. Type the nicknames we call each other to enter my world.</p>
+        <div class="inputs">
+          <input id="nick1" type="text" placeholder="Type your nickname " aria-label="Your nickname" autocomplete="off">
+          <input id="nick2" type="text" placeholder="Type my nickname " aria-label="My nickname" autocomplete="off">
+        </div>
+        <button class="btn" id="enterBtn">Enter My World 💫</button>
+        <div class="error" id="errorMsg" aria-live="polite" style="display:none"></div>
+        <div class="hint" id="hintText" style="display:none">Hint: Use the nicknames you always call each other (example: RuHi / Rishu)</div>
+      </div>
+
+    </div>
+
+    <!-- The new final button element that appears after validation -->
+    <button class="final-enter-btn" id="finalEnterBtn">Enter in SONAverse 💫</button>
+  </main>
+  
+  <!-- Content to force scrolling below the main 100vh portal view -->
+  <div class="content-ext" id="content-extension">
+    <h2>Scroll is enabled! You can fill this area with more content for SONAverse later.</h2>
+  </div>
+
+  <div class="footer" id="footer">Made with 💖 by Rishu — for his Sona, who unlocked my world 🌸</div>
+
+  <!-- Page 2 placeholder section is still here but hidden via CSS -->
+  <section class="page2" id="page2">
+    <div style="text-align:center;max-width:720px;padding:30px;background:linear-gradient(180deg,#fff0,#fff0);border-radius:16px;backdrop-filter:blur(6px)">
+      <h1 style="font-size:32px;margin:0 0 8px;color:white">Welcome to SONAverse — Page 2</h1>
+      <p style="color:rgba(255,255,255,0.9)">This is a placeholder for Page 2. Replace with the detailed layout for the rest of the SONAverse journey.</p>
+    </div>
+  </section>
+
+  <script>
+    /* ---------- Config ---------- */
+    const ACCEPTED_NICKNAMES_1 = ['ruhi','ruhi','ruhi','sona']; // acceptable for field1
+    const ACCEPTED_NICKNAMES_2 = ['rishu','rishu']; // acceptable for field2
+    const HINT_AFTER = 3;
+    const LOCK_AFTER = 5;
+    const LOCK_DURATION_MS = 30000; // 30 seconds
+
+    /* ---------- Utilities ---------- */
+    const el = id => document.getElementById(id);
+    const trimLower = s => (s||'').trim().toLowerCase();
+
+    /* ---------- Starfield generation ---------- */
+    (function makeStars(){
+      const n = 60;
+      const container = el('starfield');
+      for(let i=0;i<n;i++){
+        const s = document.createElement('div');
+        s.className='star';
+        s.style.left = Math.random()*100+'%';
+        s.style.top = Math.random()*100+'%';
+        s.style.width = (1+Math.random()*2)+'px';
+        s.style.height = s.style.width;
+        s.style.animationDelay = (Math.random()*4)+'s';
+        s.style.opacity = 0.4 + Math.random()*0.8;
+        container.appendChild(s);
+      }
+    })();
+
+    /* ---------- Floating symbols ---------- */
+    (function makeSymbols(){
+      const symList = ['💖','🕊️','🌸','☁️','💫','🎶'];
+      const container = el('symbols');
+      for(let i=0;i<12;i++){
+        const s = document.createElement('div');
+        s.className = 'sym';
+        s.textContent = symList[i % symList.length];
+        const left = 10 + Math.random()*80;
+        const top = 10 + Math.random()*80;
+        s.style.left = left + '%';
+        s.style.top = top + '%';
+        s.style.transform = `translate(-50%,-50%) rotate(${Math.random()*40-20}deg)`;
+        s.style.fontSize = (14 + Math.random()*18)+'px';
+        s.style.animationDuration = (6 + Math.random()*6)+'s';
+        s.style.opacity = 0.6 + Math.random()*0.4;
+        container.appendChild(s);
+      }
+    })();
+
+    /* ---------- Interaction Logic ---------- */
+    let attempts = 0;
+    const nick1 = el('nick1');
+    const nick2 = el('nick2');
+    const btn = el('enterBtn');
+    const errorMsg = el('errorMsg');
+    const hintText = el('hintText');
+    const modal = el('modal');
+    const footer = el('footer');
+    // const page2 = el('page2'); // No longer used for visual transition
+    const nextLink = el('nextLink');
+    const finalEnterBtn = el('finalEnterBtn'); // New button element
+
+    // show footer after delay
+    setTimeout(()=>footer.classList.add('show'), 6000);
+
+    function showError(text){
+      errorMsg.style.display='block';
+      errorMsg.textContent = text;
+      modal.classList.remove('shake');
+      void modal.offsetWidth; // restart animation
+      modal.classList.add('shake');
+    }
+
+    function clearError(){
+      errorMsg.style.display='none';
+      errorMsg.textContent='';
+    }
+
+    function validate(n1,n2){
+      const a = trimLower(n1);
+      const b = trimLower(n2);
+      return (ACCEPTED_NICKNAMES_1.includes(a) && ACCEPTED_NICKNAMES_2.includes(b));
+    }
+
+    function lockInputs(){
+      nick1.disabled = nick2.disabled = btn.disabled = true;
+      showError('Temporary lockout — thoda break lo aur phir try karo 💖');
+      setTimeout(()=>{
+        nick1.disabled = nick2.disabled = false;btn.disabled=false;clearError();attempts=0;hintText.style.display='none';
+      }, LOCK_DURATION_MS);
+    }
+
+    function emitParticles(){
+      const wrap = document.querySelector('.portal-wrap');
+      for(let i=0;i<28;i++){
+        const p = document.createElement('div');
+        p.textContent = '💖';
+        p.style.position='absolute';
+        p.style.left = '50%';
+        p.style.top = '50%';
+        p.style.transform = `translate(-50%,-50%)`;
+        p.style.pointerEvents='none';
+        p.style.fontSize = (8 + Math.random()*18)+'px';
+        p.style.opacity=1;
+        p.style.transition = `transform 1.4s cubic-bezier(.2,.9,.2,1), opacity 1.4s ease`;
+        wrap.appendChild(p);
+        requestAnimationFrame(()=>{
+          const ang = Math.random()*Math.PI*2;
+          const dist = 60 + Math.random()*160;
+          p.style.transform = `translate(${Math.cos(ang)*dist}px, ${Math.sin(ang)*dist}px) scale(${0.6+Math.random()*1.2})`;
+          p.style.opacity = 0;
+        });
+        setTimeout(()=>p.remove(), 1600);
+      }
+    }
+
+    function successFlow(){
+      // portal sparkle + whisper text
+      emitParticles();
+      
+      // Modal fades up and out
+      modal.style.transition='opacity 0.8s ease, transform 0.8s ease';
+      modal.style.opacity=0;
+      modal.style.transform='translate(-50%,-120%)';
+      setTimeout(()=>{
+        modal.style.display='none';
+      },900);
+
+      // Show small whispers near the center of the screen
+      const whispers = ['Hey Sona...','You found the key to my heart 💖','Entering SONAverse...'];
+      let idx=0;
+      const wEl = document.createElement('div');
+      wEl.style.position='absolute';wEl.style.left='50%';wEl.style.top='58%';
+      wEl.style.transform='translate(-50%,-50%)';wEl.style.fontSize='18px';wEl.style.fontWeight='600';wEl.style.opacity='0';wEl.style.textAlign='center';wEl.style.pointerEvents='none';
+      document.body.appendChild(wEl);
+      
+      const whisperInterval = setInterval(()=>{
+        if(idx>=whispers.length){
+          clearInterval(whisperInterval);
+          setTimeout(()=>{wEl.style.opacity=0;},600);
+          
+          // *** FINAL ACTION: Show the button to transition
+          setTimeout(()=>{
+            finalEnterBtn.classList.add('show');
+            // Hide the whisper element once the button is up
+            wEl.remove(); 
+          }, 1000); // 1 second after last whisper fades
+          return;
+        }
+        wEl.textContent=whispers[idx++];
+        wEl.style.color='white';
+        wEl.style.opacity=1;
+        wEl.style.transform='translate(-50%,-50%) scale(1)';
+        setTimeout(()=>{wEl.style.opacity=0;},1500);
+      },1200);
+
+      // Total time before button shows is approx 3 whispers * 1.2s + 1s delay = 4.6 seconds
+    }
+
+    // Add listener for the final navigation button
+    finalEnterBtn.addEventListener('click', ()=>{
+      window.location.href = 'page2.html';
+    });
+
+
+    btn.addEventListener('click', ()=>{
+      clearError();
+      const v1 = nick1.value;
+      const v2 = nick2.value;
+      attempts++;
+      if(validate(v1,v2)){
+        successFlow();
+        return;
+      }
+      // failure
+      if(attempts>=LOCK_AFTER){
+        lockInputs();
+        return;
+      }
+      showError('Arey thoda dhyaan — nicknames match nahi ho rahe. Dobara likh ke try karo ❤️');
+      if(attempts>=HINT_AFTER){
+        hintText.style.display='block';
+      }
+    });
+
+    // Enter key handling
+    [nick1,nick2].forEach(i=>i.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ btn.click(); }}));
+
+    // Next link disabled until unlocked
+    nextLink.addEventListener('click',(e)=>{ e.preventDefault(); 
+      // Only navigate if the final button is visible (meaning success has occurred)
+      if(finalEnterBtn.classList.contains('show')){
+        window.location.href = 'page2.html';
+      } else {
+        showError('Pehle nicknames type karke portal kholo — fir aage ja sakte ho!');
+      } 
+    });
+
+    // Accessibility: focus on first input
+    nick1.focus();
+
+  </script>
+</body>
+</html>
