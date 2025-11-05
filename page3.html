@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💌 My Love Letter to You</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            /* Soft Pastel Gradient Background */
+            background: linear-gradient(135deg, #f9a8d4 0%, #d8b4fe 40%, #bae6fd 100%);
+            /* Removed overflow: hidden to allow scrolling */
+            cursor: default;
+        }
+
+        .navbar {
+            backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Custom Paper/Card Style */
+        .letter-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            min-height: 350px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 40px rgba(255, 100, 150, 0.2);
+            padding: 3rem 1.5rem; /* Responsive padding */
+        }
+        
+        /* Typewriter text styling */
+        .typewriter-text {
+            font-family: monospace;
+            white-space: pre-wrap; /* Allows for line breaks in JS text */
+            color: #333;
+            line-height: 1.8;
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            margin: 0 auto;
+            text-align: left;
+            overflow: hidden;
+            border-right: 0.15em solid; /* This border will act as the cursor */
+        }
+
+        /* Blinking Heart Cursor */
+        .blinking-cursor {
+            color: #ec4899;
+            animation: blink 0.75s step-end infinite;
+            content: '❤️'; /* Placeholder, set via JS for smooth typing */
+            width: 0.5rem;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent }
+            50% { border-color: #ec4899; }
+        }
+
+        /* Heart Particle Animation */
+        .particle {
+            position: absolute;
+            background-color: #f9a8d4;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: floatUp 2s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-50px) scale(0); opacity: 0; }
+        }
+        
+        .floating-heart {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #d8b4fe;
+            opacity: 0.3;
+            pointer-events: none;
+            /* Using fixed positioning for floating hearts to avoid scrolling issues */
+            position: fixed; 
+            animation: floatBg 20s infinite linear;
+        }
+
+        @keyframes floatBg {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0.3; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-20vh) translateX(10vw); opacity: 0.3; }
+        }
+
+        /* Keyword Style */
+        .keyword {
+            cursor: pointer;
+            color: #ec4899;
+            font-weight: 700;
+            transition: color 0.2s;
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Floating Hearts (CSS/JS controlled) -->
+    <div id="bgParticles"></div>
+
+    <!-- Navbar (Minimal Glass Style) -->
+    <nav class="navbar fixed top-0 left-0 right-0 p-4 z-50 rounded-b-xl">
+        <div class="flex justify-end space-x-4 text-white">
+            <a href="sorryverse_page2.html" class="flex items-center p-2 rounded-full hover:bg-pink-500/50 transition duration-300 text-pink-700 font-semibold">
+                <span class="mr-2">💖</span> Back to Sorryverse
+            </a>
+            <a href="page4.html" class="flex items-center p-2 rounded-full hover:bg-pink-500/50 transition duration-300 text-purple-700 font-semibold hidden" id="nextButtonNav">
+                <span class="mr-2">💫</span> Continue to Memories
+            </a>
+            <a href="#" class="flex items-center p-2 rounded-full hover:bg-pink-500/50 transition duration-300 text-blue-700 font-semibold" onclick="window.location.reload();">
+                <span class="mr-2">💌</span> Re-read Letter
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content: Love Letter Card -->
+    <main class="flex flex-grow items-center justify-center p-4 pt-20 pb-16">
+        <div class="letter-card rounded-xl transform transition-all duration-700 scale-95 hover:scale-100">
+            <h1 class="text-4xl font-extrabold text-center text-pink-700 mb-6 sm:mb-8">My Love Letter to You</h1>
+            
+            <div id="typewriter" class="typewriter-text text-gray-700">
+                <span id="typedContent"></span>
+                <span id="cursor" class="blinking-cursor">█</span>
+            </div>
+
+            <!-- Glowing Continue Button (Initially Hidden) -->
+            <div id="continueContainer" class="text-center mt-10 opacity-0 transition-opacity duration-1000">
+                <a href="page4.html" class="inline-flex items-center justify-center px-8 py-4 text-xl font-bold rounded-full text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-xl shadow-pink-500/50 transform hover:scale-105">
+                    Continue to Memories 💫
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Line -->
+    <footer class="w-full p-3 text-center text-sm text-gray-800 z-40 bg-white/40">
+        <p>Yahan har ek sabd bas aapke liye hai, Sona… pure dil se hai. 💖 — Rishu</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const typedContent = document.getElementById('typedContent');
+            const cursor = document.getElementById('cursor');
+            const continueContainer = document.getElementById('continueContainer');
+            const bgParticlesContainer = document.getElementById('bgParticles');
+            
+            // The full letter content, line by line. Keywords are in CAPITAL_SNAKE_CASE for replacement.
+            const letterLines = [
+                "_Hey Sona… 💖",
+                "Aapko bhi pata hai ki aap mere liye kitna precious aur kitne important hai. My Peace.",
+                "Mera har happiest ya saddest bhi moment kyu na ho, bas aapke bina incomplete lagta hai, adhura lagta hai. My Happiness. ",
+                "Humko bahut jyada guilt hota hai jab kabhi aapko bura laga dete hai, aur Hum aapko promise karte hai hum aapke liye aur better se better se betterest hote rahenge humesha.",
+                "Aap mere sukoon hai jiske paas jate hi mera sara chaos khatam ho jata hai, aap mere wo khushi hai jo humko tab bhi khush kar sakta hai jab mere paas koi reason na ho khush hone ka, in short bole to bauaa aap mere sabkuchh ho, my everything 💞.",
+                "I love you itna jyada jitna words se explain hi nahi kiya ja sakta, I love you more than anything and more than anyone.",
+                "Hum apne saath aapka har sapna pura karna chahte hai, aapko successful hote hue dekhna chahte hai, ek saath har wo chij achieve karna chahte hai jo humlog soch kar rakhe hai, aapka forever banna chahte hai."
+            ];
+
+            const KEYWORDS = ['PEACE', 'HAPPINESS', 'EVERYTHING', 'LOVE', 'FOREVER'];
+            const TYPING_SPEED = 50; // Milliseconds per character
+            const LINE_DELAY = 1000; // Milliseconds between lines
+
+            let currentLineIndex = 0;
+            let charIndex = 0;
+
+            // --- 1. Typewriter Logic ---
+
+            function typeWriter() {
+                if (currentLineIndex < letterLines.length) {
+                    const currentLine = letterLines[currentLineIndex];
+                    
+                    if (charIndex < currentLine.length) {
+                        const nextChar = currentLine.charAt(charIndex);
+                        typedContent.textContent += nextChar;
+                        charIndex++;
+                        setTimeout(typeWriter, TYPING_SPEED);
+                    } else {
+                        // End of line, add a line break
+                        typedContent.innerHTML += '<br>';
+                        charIndex = 0;
+                        currentLineIndex++;
+                        
+                        // Process the previous line for keywords after it's fully typed
+                        // We target the newly added <br> element's preceding sibling.
+                        const children = Array.from(typedContent.childNodes);
+                        const lastNode = children[children.length - 2]; 
+                        
+                        if (currentLineIndex > 0 && lastNode && lastNode.nodeType === 3) {
+                            // If the last node is text (as it will be after the first line), process it.
+                            processKeywords();
+                        }
+
+
+                        // Start typing the next line after a delay
+                        if (currentLineIndex < letterLines.length) {
+                            setTimeout(typeWriter, LINE_DELAY);
+                        } else {
+                            // All lines finished
+                            cursor.style.opacity = '0';
+                            revealContinueButton();
+                        }
+                    }
+                }
+            }
+            
+            // --- 2. Keyword Processing and Hover Sparkle ---
+
+            function processKeywords() {
+                // We need to capture the ENTIRE content of typedContent and re-process it,
+                // otherwise, it's difficult to target only the last typed line without complex parsing.
+                let htmlContent = typedContent.innerHTML;
+                let newHtml = htmlContent;
+
+                KEYWORDS.forEach(keyword => {
+                    // Create a regex to match the keyword but only if it's not already wrapped in <span class="keyword">
+                    // This is complex, so for simplicity and robustness in this environment, we rely on the full replacement.
+                    // The core issue with the previous implementation was that it tried to process the text node children 
+                    // which is unreliable during the rapid typing updates. Re-processing the innerHTML is the most stable approach here.
+                    const regex = new RegExp(`(?<!<span class="keyword" data-keyword="${keyword}">${keyword})\\b${keyword}\\b`, 'gi');
+                    
+                    // Simple replacement for now, ensuring all keywords are wrapped
+                    newHtml = newHtml.replace(new RegExp(keyword, 'gi'), `<span class="keyword" data-keyword="${keyword}">${keyword}</span>`);
+                });
+                
+                // Update the innerHTML with the processed content
+                typedContent.innerHTML = newHtml;
+
+                // Attach event listeners to all keyword spans
+                document.querySelectorAll('.keyword').forEach(span => {
+                    span.removeEventListener('mouseover', handleKeywordHover); // Prevent double-binding
+                    span.addEventListener('mouseover', handleKeywordHover);
+                });
+            }
+
+            function handleKeywordHover(event) {
+                const span = event.currentTarget;
+                const rect = span.getBoundingClientRect();
+                const count = 5 + Math.floor(Math.random() * 5); // 5 to 9 particles
+
+                for (let i = 0; i < count; i++) {
+                    createParticle(
+                        rect.left + rect.width / 2, 
+                        rect.top + rect.height / 2
+                    );
+                }
+            }
+
+            function createParticle(x, y) {
+                const particle = document.createElement('span');
+                particle.classList.add('particle');
+                
+                // Random size and color
+                const size = 5 + Math.random() * 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.background = Math.random() > 0.5 ? '#f472b6' : '#d8b4fe';
+
+                // Initial position relative to the viewport
+                particle.style.left = `${x - size / 2 + (Math.random() - 0.5) * 10}px`;
+                particle.style.top = `${y - size / 2 + (Math.random() - 0.5) * 10}px`;
+
+                document.body.appendChild(particle);
+
+                // Clean up the particle after animation finishes
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000);
+            }
+            
+            // --- 3. Background Particles ---
+            
+            function createBackgroundParticle() {
+                const heart = document.createElement('span');
+                heart.classList.add('floating-heart');
+                heart.innerHTML = Math.random() > 0.5 ? '💖' : '✨'; 
+                
+                // Random starting position and animation delay
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.top = `${100 + Math.random() * 10}vh`; 
+                heart.style.animationDuration = `${15 + Math.random() * 15}s`;
+                heart.style.animationDelay = `-${Math.random() * 30}s`;
+
+                bgParticlesContainer.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, parseFloat(heart.style.animationDuration) * 1000 + 1000); 
+            }
+
+            function initBackgroundParticles() {
+                const count = 20;
+                for (let i = 0; i < count; i++) {
+                    createBackgroundParticle();
+                }
+                setInterval(createBackgroundParticle, 1500); 
+            }
+
+            // --- 4. Completion ---
+
+            function revealContinueButton() {
+                // Final cleanup of the content to replace the last set of keywords
+                processKeywords(); 
+
+                // Show the continue button
+                continueContainer.style.opacity = '1';
+                document.getElementById('nextButtonNav').classList.remove('hidden');
+                
+                // Replace the typewriter border cursor with a heart emoji
+                cursor.innerHTML = '❤️';
+                cursor.classList.remove('blinking-cursor');
+                cursor.style.border = 'none';
+            }
+
+
+            // --- Initialization ---
+            
+            initBackgroundParticles();
+            typeWriter(); 
+            
+            // Fix initial content to enable proper keyword replacement on the first line
+            typedContent.innerHTML = '';
+        });
+    </script>
+</body>
+</html>

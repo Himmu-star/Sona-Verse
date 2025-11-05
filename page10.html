@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAGE 10: A Cup of Love – Coffee Date</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind to use 'Inter' and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Georgia', 'serif'],
+                    },
+                    colors: {
+                        'cafe-dark': '#3e2723',
+                        'cafe-light': '#efebe9',
+                        'warm-glow': '#ffcc80',
+                        'soft-pink': '#f48fb1',
+                    },
+                    keyframes: {
+                        steam: {
+                            '0%': { transform: 'translateY(0) scaleX(1)', opacity: '0.6' },
+                            '100%': { transform: 'translateY(-30px) scaleX(0.8)', opacity: '0' },
+                        },
+                        heartSteam: {
+                            '0%, 100%': { transform: 'translateY(0) scale(1)', opacity: '0.8', 'clip-path': 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)' },
+                            '50%': { transform: 'translateY(-30px) scale(1.5)', opacity: '0', 'clip-path': 'polygon(0% 20%, 50% 0%, 100% 20%, 50% 100%)' },
+                        },
+                        flicker: {
+                            '0%, 100%': { opacity: '1', filter: 'brightness(1)' },
+                            '50%': { opacity: '0.95', filter: 'brightness(0.98)' },
+                            '70%': { opacity: '1', filter: 'brightness(1.05)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { 'box-shadow': '0 0 10px #ffcc80', 'background-color': '#ffcc80' },
+                            '50%': { 'box-shadow': '0 0 20px #ffcc80, 0 0 30px #f48fb1', 'background-color': '#f48fb1' },
+                        }
+                    },
+                    animation: {
+                        steam: 'steam 5s ease-out infinite',
+                        heartSteam: 'heartSteam 1.5s ease-in-out',
+                        flicker: 'flicker 4s ease-in-out infinite alternate',
+                        glow: 'pulseGlow 5s ease-in-out infinite alternate',
+                    },
+                },
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        .font-inter { font-family: 'Inter', sans-serif; }
+        
+        /* Custom scrollbar for better visual integration */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #5d4037; border-radius: 2px; }
+        ::-webkit-scrollbar-track { background: #efebe9; }
+
+        /* Background setup for the cozy cafe vibe */
+        #cafe-background {
+            background-color: #3e2723;
+            background-image: radial-gradient(circle at 50% 50%, rgba(255, 204, 128, 0.1) 0%, rgba(62, 39, 35, 1) 70%);
+            transition: all 5s ease-in-out;
+        }
+
+        /* Rain effect over the window area */
+        #rain-window::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.15) 0px,
+                rgba(255, 255, 255, 0.15) 1px,
+                transparent 1px,
+                transparent 15px
+            );
+            filter: blur(1px);
+            opacity: 0.5;
+            animation: rain-fall 10s linear infinite;
+        }
+        @keyframes rain-fall {
+            from { background-position: 0 0; }
+            to { background-position: 100px 300px; }
+        }
+
+        /* Coffee Cup Steam */
+        .steam {
+            width: 10px; height: 10px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Individual steam clouds for animation */
+        .steam-cloud {
+            animation: steam 8s ease-out infinite;
+            filter: blur(1px);
+        }
+        .steam-cloud:nth-child(1) { animation-delay: 0s; transform: scale(1.1); }
+        .steam-cloud:nth-child(2) { animation-delay: 2s; transform: scale(0.9); }
+        .steam-cloud:nth-child(3) { animation-delay: 4s; transform: scale(1.2); }
+
+        /* Heart effect on click */
+        .heart-steam {
+            animation: heartSteam 1.5s ease-out forwards;
+            background-color: #f48fb1;
+        }
+
+        /* Chat bubble styling */
+        .chat-bubble {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .chat-me {
+            background-color: #fce4ec; /* Soft Pink */
+            align-self: flex-start;
+            border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+        }
+        .chat-them {
+            background-color: #fff; /* White */
+            align-self: flex-end;
+        }
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Candle/Lamp effect */
+        .candle-flame {
+            box-shadow: 0 0 10px 5px #ffcc80, 0 0 20px 10px #ff9800;
+            animation: flicker 1s infinite alternate;
+        }
+
+        /* Fade-out for transition */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 3s ease-in-out;
+        }
+
+        /* Star/Sparkle effect */
+        .sparkle-effect {
+            position: absolute;
+            pointer-events: none;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle at center, #ffeb3b 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkle 0.5s ease-out forwards;
+        }
+        @keyframes sparkle {
+            0% { transform: scale(0.2) translateY(0); opacity: 1; }
+            100% { transform: scale(1.5) translateY(-10px); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-cafe-dark font-inter min-h-screen">
+    
+    <!-- Audio Placeholder for Ambience (Muted, looping soft café/rain sounds) -->
+    <!-- You would replace the 'src' with a soft, non-disruptive, looping audio file for cafe ambiance and rain -->
+    <audio id="ambience-sound" loop muted autoplay>
+        <source src="cafe_ambience.mp3" type="audio/mpeg">
+        <source src="cafe_ambience.ogg" type="audio/ogg">
+        <!-- Fallback text: -->
+    </audio>
+
+    <!-- Main Container -->
+    <div id="cafe-background" class="relative min-h-screen flex flex-col justify-between items-center p-4 transition-all duration-1000">
+
+        <!-- Glowing Overlay for Transition (Hidden initially) -->
+        <div id="transition-glow" class="fixed inset-0 bg-soft-pink opacity-0 transition-opacity duration-3000 ease-in-out z-40 flex flex-col justify-center items-center text-white text-center">
+            <h1 id="final-message" class="text-3xl sm:text-5xl font-serif italic mb-4 opacity-0 transform scale-95 transition-all duration-2000 ease-out">
+                Every coffee, every moment… is better with you ❤️ — Rishu
+            </h1>
+            <p id="countdown-text" class="text-lg mt-4 opacity-0 transition-opacity duration-1000">Transitioning in <span id="countdown">5</span>...</p>
+        </div>
+
+        <!-- Navbar (Top) -->
+        <header class="w-full max-w-lg flex justify-between items-center z-30 mb-4">
+            <a href="page9.html" class="flex items-center space-x-2 text-cafe-light hover:text-soft-pink transition duration-300 transform hover:scale-105 p-2 rounded-full">
+                <span class="text-xl">💖</span>
+                <span class="hidden sm:inline">Back</span>
+            </a>
+            <h1 class="text-xl font-bold text-warm-glow">A Cup of Love</h1>
+            <a id="replay-button" onclick="window.location.reload()" class="flex items-center space-x-2 text-cafe-light hover:text-warm-glow transition duration-300 transform hover:scale-105 p-2 rounded-full cursor-pointer">
+                <span class="text-xl">🫶</span>
+                <span class="hidden sm:inline">Replay Chat</span>
+            </a>
+        </header>
+
+        <!-- Central Scene Content -->
+        <main class="flex-grow w-full max-w-2xl flex flex-col items-center justify-center p-4 z-20">
+            <div id="scene-container" class="w-full flex flex-col sm:flex-row bg-cafe-dark/50 rounded-xl shadow-2xl backdrop-blur-sm p-4 sm:p-8 min-h-[400px]">
+                
+                <!-- Left Side: Cozy Window & Candle -->
+                <div class="flex-1 flex flex-col items-center justify-center mb-6 sm:mb-0 sm:pr-8">
+                    <div id="rain-window" class="relative w-full h-32 sm:h-48 bg-gray-700 rounded-lg overflow-hidden border-2 border-cafe-dark shadow-inner mb-6">
+                        <div class="absolute inset-0 bg-gray-900/40"></div>
+                        <div class="p-2 text-center text-cafe-light/70 text-xs italic">Soft Rain Outside 🌧️</div>
+                    </div>
+                    <!-- Small Candle/Lamp -->
+                    <div class="w-12 h-16 bg-cafe-dark rounded-t-full relative shadow-lg">
+                        <div class="absolute inset-x-0 bottom-0 h-1/2 bg-cafe-dark rounded-b-lg"></div>
+                        <div class="absolute top-[-10px] left-1/2 -translate-x-1/2 w-1 h-3 bg-warm-glow/50"></div>
+                        <div class="absolute top-[-15px] left-1/2 -translate-x-1/2 w-4 h-4 bg-warm-glow rounded-full candle-flame"></div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Coffee and Chat -->
+                <div class="flex-1 flex flex-col items-center justify-end relative">
+
+                    <!-- Coffee Cup -->
+                    <div id="coffee-cup-container" class="relative mb-6 cursor-pointer transform hover:scale-105 transition-transform duration-300" onclick="handleCoffeeClick()">
+                        <!-- Steam clouds -->
+                        <div class="steam steam-cloud" style="left: 40%; animation-duration: 4s;"></div>
+                        <div class="steam steam-cloud" style="left: 60%; animation-duration: 6s; animation-delay: 1s;"></div>
+                        <div class="steam steam-cloud" style="left: 50%; animation-duration: 5s; animation-delay: 2s;"></div>
+
+                        <!-- Coffee Cup SVG (Stylized) -->
+                        <svg class="w-24 h-24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Shadow/Depth -->
+                            <ellipse cx="50" cy="90" rx="35" ry="5" fill="#5d4037" />
+                            <!-- Coffee (Brown) -->
+                            <path d="M 20 60 C 20 30, 80 30, 80 60 L 85 90 C 85 95, 15 95, 15 90 Z" fill="#795548" />
+                            <!-- Cup Body (Light Cafe) -->
+                            <path d="M 20 60 C 20 30, 80 30, 80 60 L 85 90 L 15 90 Z" fill="#efebe9" stroke="#3e2723" stroke-width="1.5"/>
+                            <!-- Inner Coffee Surface (Darker Brown) -->
+                            <ellipse cx="50" cy="62" rx="28" ry="6" fill="#4e342e" />
+                            <!-- Handle -->
+                            <path d="M 80 40 A 15 15 0 1 1 80 60 M 80 40 L 95 40 A 15 15 0 1 1 95 60 L 80 60" fill="#efebe9" stroke="#3e2723" stroke-width="1.5"/>
+                            <circle cx="90" cy="50" r="4" fill="transparent" />
+                        </svg>
+                        <p class="text-xs text-center text-cafe-light/70 mt-1">(Click for a heart!)</p>
+                    </div>
+
+                    <!-- Chat Box -->
+                    <div id="chat-box" class="w-full flex flex-col space-y-3">
+                        <!-- Messages will be appended here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer (Bottom) -->
+        <footer class="w-full max-w-4xl text-center py-4 z-30">
+            <p class="text-sm text-cafe-light italic opacity-80">
+                “Even a simple coffee becomes magical when shared with you, Sona 💞 — Rishu”
+            </p>
+            <div class="flex justify-center mt-3 space-x-6">
+                <a href="page9.html" class="text-xs text-cafe-light hover:text-warm-glow transition">💖 Back to Page 9</a>
+                <a id="next-page-link" href="page11.html" class="text-xs text-cafe-light hover:text-soft-pink transition hidden">☕ Next Page 11</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // Global variables and setup
+        const chatBox = document.getElementById('chat-box');
+        const ambienceSound = document.getElementById('ambience-sound');
+        const sceneContainer = document.getElementById('scene-container');
+        const coffeeCupContainer = document.getElementById('coffee-cup-container');
+        const background = document.getElementById('cafe-background');
+        const finalMessage = document.getElementById('final-message');
+        const transitionGlow = document.getElementById('transition-glow');
+        const nextLink = document.getElementById('next-page-link');
+        const countdownElement = document.getElementById('countdown');
+
+        // Chat conversation data
+        const messages = [
+            { sender: 'Rishu', text: 'Ek coffee bina aapke adhuri hai… ☕💖', delay: 1500, self: false },
+            { sender: 'Ruhi', text: 'Toh fir kab mil rahe ho? ☺️', delay: 2000, self: true, typing: true },
+            { sender: 'Rishu', text: 'Jaldi, bas aapke saath… aur har sip me sirf aap ki yaad hogi 💞', delay: 2500, self: false }
+        ];
+
+        let messageIndex = 0;
+
+        // Function to create a chat bubble element
+        function createChatBubble(message) {
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${message.self ? 'chat-me' : 'chat-them'} ${message.self ? 'self-end' : 'self-start'} w-fit`;
+            bubble.style.opacity = '0'; // Start invisible
+            bubble.innerHTML = `<p class="text-sm">${message.text}</p>`;
+            return bubble;
+        }
+
+        // Function to display messages sequentially
+        function displayNextMessage() {
+            if (messageIndex >= messages.length) {
+                // Chat finished
+                setTimeout(startTransition, 500); // Wait a little after last bubble loads
+                return;
+            }
+
+            const message = messages[messageIndex];
+            const bubble = createChatBubble(message);
+            chatBox.appendChild(bubble);
+
+            // Wait for the specific message delay
+            setTimeout(() => {
+                // If typing effect is required (for Ruhi's auto-response)
+                if (message.typing) {
+                    let fullText = message.text;
+                    bubble.querySelector('p').textContent = '';
+                    
+                    let charIndex = 0;
+                    const typingInterval = 50; // ms per character
+
+                    const type = () => {
+                        if (charIndex < fullText.length) {
+                            bubble.querySelector('p').textContent += fullText.charAt(charIndex);
+                            charIndex++;
+                            requestAnimationFrame(type);
+                        } else {
+                            // After typing is done, make bubble visible and move to next message
+                            bubble.classList.add('visible');
+                            messageIndex++;
+                            displayNextMessage();
+                        }
+                    };
+                    
+                    // Show the bubble container immediately, then start typing
+                    bubble.style.opacity = '1';
+                    bubble.style.transform = 'translateY(0)';
+                    type();
+
+                } else {
+                    // Standard fade-in for Rishu's messages
+                    bubble.classList.add('visible');
+                    messageIndex++;
+                    displayNextMessage();
+                }
+                
+            }, message.delay);
+        }
+
+        // Handles the click on the coffee cup
+        function handleCoffeeClick() {
+            const steamClouds = coffeeCupContainer.querySelectorAll('.steam-cloud');
+            
+            // Check if the heart animation is already running
+            if (coffeeCupContainer.classList.contains('animating-heart')) {
+                return;
+            }
+
+            coffeeCupContainer.classList.add('animating-heart');
+
+            // 1. Temporarily pause standard steam animation and apply heart class
+            steamClouds.forEach(cloud => {
+                cloud.style.animationPlayState = 'paused';
+                cloud.classList.add('heart-steam');
+            });
+            
+            // 2. Clear heart animation after it completes (1.5s)
+            setTimeout(() => {
+                steamClouds.forEach(cloud => {
+                    cloud.classList.remove('heart-steam');
+                    cloud.style.animationPlayState = 'running';
+                });
+                coffeeCupContainer.classList.remove('animating-heart');
+            }, 1500);
+
+            // 3. Add a soft sparkle effect on the table nearby
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle-effect';
+            // Position near the coffee cup (relative to the scene container)
+            const rect = coffeeCupContainer.getBoundingClientRect();
+            sparkle.style.top = `${rect.top + rect.height / 2}px`;
+            sparkle.style.left = `${rect.left + rect.width / 2}px`;
+            
+            // Append to body/scene for accurate positioning
+            document.body.appendChild(sparkle); 
+            
+            setTimeout(() => {
+                document.body.removeChild(sparkle);
+            }, 500); 
+        }
+
+        // Handles the final transition and auto-redirect
+        function startTransition() {
+            const transitionDelay = 5000; // 5 seconds for glow and message display
+            const redirectDelay = 7000; // 7 seconds before redirect
+
+            // 1. Start the glow effect
+            background.classList.add('fade-out'); // Fade out the main scene
+            transitionGlow.style.opacity = '1';
+            transitionGlow.style.backgroundColor = '#ffcc80'; // Start golden
+
+            // 2. Show the final message
+            setTimeout(() => {
+                finalMessage.style.opacity = '1';
+                finalMessage.style.transform = 'scale(1)';
+                transitionGlow.style.backgroundColor = '#f48fb1'; // End soft pink
+                
+                // Show countdown text
+                countdownText.style.opacity = '1';
+                nextLink.classList.remove('hidden'); // Show Next Page link
+                
+                // Start countdown
+                let count = transitionDelay / 1000;
+                countdownElement.textContent = count;
+                const countdownInterval = setInterval(() => {
+                    count--;
+                    countdownElement.textContent = count;
+                    if (count <= 0) {
+                        clearInterval(countdownInterval);
+                    }
+                }, 1000);
+            }, 1000); // 1 second after starting fade-out
+
+            // 3. Automatic redirect
+            setTimeout(() => {
+                // Ensure the next page is loaded smoothly
+                window.location.href = 'page11.html';
+            }, redirectDelay);
+        }
+
+        // Initialization
+        window.onload = function() {
+            // Mute the audio initially and try to play it (since autoplay with sound is often blocked)
+            ambienceSound.volume = 0.3;
+            ambienceSound.play().catch(e => console.log("Audio play blocked:", e));
+
+            // Start the chat conversation
+            displayNextMessage();
+        };
+    </script>
+</body>
+</html>

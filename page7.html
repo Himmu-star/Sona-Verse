@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌈 The Dreamverse – Our Future Together</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* ------------------------------------------------ */
+        /* BASE STYLES & ANIMATIONS */
+        /* ------------------------------------------------ */
+
+        /* Dream Sky Gradient Animation */
+        @keyframes sky-shift {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            /* Animated Pink → Peach → Blue Gradient */
+            background: linear-gradient(-45deg, #fbcfe8, #fcd34d, #93c5fd, #c4b5fd);
+            background-size: 400% 400%;
+            animation: sky-shift 20s ease infinite;
+            color: #333;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth; /* For smooth navigation */
+        }
+        
+        /* Scroll Snap Container (Main Cinematic Effect) */
+        .dream-container {
+            flex-grow: 1;
+            overflow-y: scroll;
+            height: 100vh;
+            scroll-snap-type: y mandatory;
+            padding-top: 5rem; /* Space for the navbar */
+            padding-bottom: 5rem; /* Space for the footer */
+        }
+
+        /* Each Dream Section snaps perfectly into view */
+        .dream-section {
+            height: calc(100vh - 10rem); /* Full height minus fixed nav/footer space */
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Navbar & Footer Glass Styles */
+        .glass-nav {
+            backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            transition: background-color 0.3s;
+        }
+        .glass-footer {
+            backdrop-filter: blur(5px);
+            background-color: rgba(255, 255, 255, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Glowing Text Effect */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 105, 180, 0.6);
+        }
+
+        /* Pulsing Heartbeat Animation */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px #f9a8d4, 0 0 20px #f472b6; transform: scale(1); }
+            50% { box-shadow: 0 0 15px #ec4899, 0 0 30px #e11d48; transform: scale(1.05); }
+        }
+        .heartbeat {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        /* Floating Cloud/Butterfly Animation */
+        @keyframes float-side {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(10px, -10px); }
+            100% { transform: translate(0, 0); }
+        }
+        .float-element {
+            animation: float-side 8s ease-in-out infinite;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="glass-nav fixed top-0 left-0 right-0 p-4 z-50 rounded-b-xl shadow-lg">
+        <div class="flex justify-end space-x-4 text-gray-800">
+            <!-- 💍 Back → Page 6 (page6.html) -->
+            <a href="page6.html" class="nav-link text-pink-600 hover:bg-pink-100 p-2 rounded-full transition-colors font-semibold">
+                <span class="mr-1">💍</span> Back to Last Page
+            </a>
+            <!-- 💫 Next → Page 8 (page8.html) -->
+            <a href="#forever-frame" class="nav-link text-purple-600 hover:bg-purple-100 p-2 rounded-full transition-colors font-semibold">
+                <span class="mr-1">💫</span> Final Scene
+            </a>
+            <!-- ☁️ Replay Dreams → reload page -->
+            <a href="#" onclick="window.location.reload();" class="nav-link text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-colors font-semibold">
+                <span class="mr-1">☁️</span> Replay Dreams
+            </a>
+            <!-- 🕊️ About → # (optional static info) -->
+            <a href="#" class="nav-link text-blue-600 hover:bg-blue-100 p-2 rounded-full transition-colors font-semibold">
+                <span class="mr-1">🕊️</span> About
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Main Dreamverse Container (Scroll Snap) -->
+    <main class="dream-container">
+
+        <!-- ------------------------------------------------ -->
+        <!-- DREAM TITLE SECTION -->
+        <!-- ------------------------------------------------ -->
+        <section class="dream-section bg-transparent pt-32">
+            <div class="max-w-4xl px-8">
+                <h1 class="text-7xl md:text-8xl font-black text-white glow-text leading-tight drop-shadow-2xl">
+                    The Dreamverse 🌌
+                </h1>
+                <p class="text-3xl md:text-4xl italic font-light text-pink-100 mt-4 drop-shadow-xl">
+                    Our Future, Written in Starlight
+                </p>
+                <div class="mt-8">
+                    <button onclick="document.getElementById('dream-home').scrollIntoView()" class="px-8 py-3 bg-white/70 text-purple-600 font-bold text-xl rounded-full shadow-lg hover:bg-white transition-all transform hover:scale-105">
+                        Start the Journey ↓
+                    </button>
+                </div>
+                <!-- Floating Butterfly -->
+                <span class="float-element absolute top-1/4 left-1/4 text-5xl">🦋</span>
+                <span class="float-element absolute bottom-1/4 right-1/4 text-4xl" style="animation-delay: 1.5s;">☁️</span>
+            </div>
+        </section>
+
+
+        <!-- ------------------------------------------------ -->
+        <!-- 1. OUR DREAM HOME -->
+        <!-- ------------------------------------------------ -->
+        <section id="dream-home" class="dream-section bg-transparent">
+            <div class="bg-white/80 p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg heartbeat">
+                <div class="text-7xl mb-4">🏡💖</div>
+                <h2 class="text-4xl font-extrabold text-pink-600 mb-4">
+                    Our Dream Home
+                </h2>
+                <p class="text-xl text-gray-700 leading-relaxed">
+                    "Yeh hamara ghar hoga Sona... jahan subah tumhari muskaan se din shuru hoga aur raat tumhare kandhe pe khatam."
+                </p>
+                <p class="text-sm mt-3 italic text-purple-500">
+                    Soft wind chime sound + birds chirping.
+                </p>
+            </div>
+            <!-- Additional Floating Element -->
+            <span class="float-element absolute bottom-20 left-10 text-4xl" style="animation-delay: 2s;">🌸</span>
+        </section>
+
+        <!-- ------------------------------------------------ -->
+        <!-- 2. OUR WEDDING DAY -->
+        <!-- ------------------------------------------------ -->
+        <section id="dream-wedding" class="dream-section bg-transparent">
+            <div class="bg-white/80 p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg heartbeat">
+                <div class="text-7xl mb-4">💍✨</div>
+                <h2 class="text-4xl font-extrabold text-purple-600 mb-4">
+                    Our Wedding Day
+                </h2>
+                <p class="text-xl text-gray-700 leading-relaxed">
+                    "Ek din aayega jab tumhare naam ke sindoor se meri duniya roshan ho jayegi 💫"
+                </p>
+                <p class="text-sm mt-3 italic text-pink-500">
+                    Soft confetti + temple bells glow.
+                </p>
+                <!-- Silhouette placeholder (simple heart shape) -->
+                <div class="mt-6 text-7xl text-pink-500 shadow-lg inline-block p-4 rounded-full">
+                    <span class="inline-block transform rotate-12">❤️</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------ -->
+        <!-- 3. OUR LITTLE COFFEE DATES -->
+        <!-- ------------------------------------------------ -->
+        <section id="dream-coffee" class="dream-section bg-transparent">
+            <div class="bg-white/80 p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg heartbeat">
+                <div class="text-7xl mb-4">☕💞</div>
+                <h2 class="text-4xl font-extrabold text-red-500 mb-4">
+                    Our Little Coffee Dates
+                </h2>
+                <p class="text-xl text-gray-700 leading-relaxed">
+                    "Kabhi baarish me, kabhi dhoop me... hum dono sirf baatein karenge, bina kisi wajah ke."
+                </p>
+                <p class="text-sm mt-3 italic text-purple-500">
+                    Cozy warmth animation + rain sound effect.
+                </p>
+                <!-- Steaming Mugs placeholder -->
+                <div class="flex justify-center space-x-4 mt-6">
+                    <span class="text-6xl">☕</span>
+                    <span class="text-6xl">☕</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------ -->
+        <!-- 4. OUR ADVENTURES TOGETHER -->
+        <!-- ------------------------------------------------ -->
+        <section id="dream-travel" class="dream-section bg-transparent">
+            <div class="bg-white/80 p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg heartbeat">
+                <div class="text-7xl mb-4">✈️🗺️</div>
+                <h2 class="text-4xl font-extrabold text-blue-600 mb-4">
+                    Our Adventures Together
+                </h2>
+                <p class="text-xl text-gray-700 leading-relaxed">
+                    "Duniya ke har kone me tumhare saath rehna hai... Har city me ek 'hum' chhupana hai."
+                </p>
+                <p class="text-sm mt-3 italic text-pink-500">
+                    Soft breeze + clouds passing animation.
+                </p>
+            </div>
+            <!-- Additional Floating Element (Plane/Adventure) -->
+            <span class="float-element absolute top-1/4 right-1/4 text-7xl" style="animation-delay: 0.5s;">🌍</span>
+        </section>
+
+        <!-- ------------------------------------------------ -->
+        <!-- 5. OUR PEACEFUL LIFE -->
+        <!-- ------------------------------------------------ -->
+        <section id="dream-peace" class="dream-section bg-transparent">
+            <div class="bg-white/80 p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg heartbeat">
+                <div class="text-7xl mb-4">🌙✨</div>
+                <h2 class="text-4xl font-extrabold text-teal-600 mb-4">
+                    Our Peaceful Life
+                </h2>
+                <p class="text-xl text-gray-700 leading-relaxed">
+                    "Jab duniya so rahi hogi, hum apne sapno me bhi ek dusre ko dekh rahe honge 💞"
+                </p>
+                <p class="text-sm mt-3 italic text-purple-500">
+                    Background stars slowly pulse like a heartbeat.
+                </p>
+                <!-- Glowing Names/Stars -->
+                <div class="mt-6 text-3xl font-mono tracking-widest text-yellow-400 glow-text">
+                    ✨ RuHi 💫 Rishu ✨
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------ -->
+        <!-- FINAL SCENE – FOREVER FRAME -->
+        <!-- ------------------------------------------------ -->
+        <section id="forever-frame" class="dream-section bg-transparent">
+            <div class="bg-white/90 p-10 md:p-16 rounded-3xl shadow-2xl max-w-2xl border-4 border-pink-400 heartbeat transition-opacity duration-1000 ease-in-out">
+                
+                <p class="text-2xl italic text-gray-600 mb-6">
+                    "This is the future I dream of — not rich, not fancy,
+                </p>
+                <h2 class="text-6xl font-black text-pink-700 mb-8 glow-text">
+                    just us... together, forever 💖
+                </h2>
+                
+                <!-- Glowing Frame (Merged Hearts) -->
+                <div class="text-9xl mb-12 transform scale-110">
+                    <span class="inline-block text-red-500" style="filter: drop-shadow(0 0 10px #f87171);">❤️</span>
+                    <span class="inline-block -ml-8 text-pink-500" style="filter: drop-shadow(0 0 10px #ec4899);">❤️</span>
+                </div>
+
+                <!-- Final Button -->
+                <a href="page8.html" class="inline-flex items-center justify-center px-12 py-5 text-2xl font-extrabold rounded-full text-white bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 transition-all duration-500 shadow-2xl shadow-pink-500/70 transform hover:scale-110">
+                    Step into Forever 💍
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-footer fixed bottom-0 w-full p-3 z-50 rounded-t-xl">
+        <div class="text-center text-sm font-medium text-gray-700 italic">
+            "Sapne sirf dekhne ke liye nahi, poore karne ke liye hain...
+            aur har sapne me bas Ruhi hi hai 💖 — Rishu"
+        </div>
+    </footer>
+</body>
+</html>

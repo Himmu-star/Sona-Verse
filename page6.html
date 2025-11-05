@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💍 Promise Chamber – Eternal Vows</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            /* Deep blue to purple galaxy gradient 🌌 */
+            background: linear-gradient(140deg, #1d003b 0%, #3a007d 50%, #000033 100%);
+            color: #ffffff;
+            overflow: auto; /* Allow scrolling for small screens */
+        }
+
+        .navbar {
+            backdrop-filter: blur(8px);
+            background-color: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link {
+            transition: all 0.3s;
+            padding: 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            color: #d8b4fe;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+
+        /* Dedicated Header for the title (The simple color rectangle) */
+        .page-header {
+            width: 100%;
+            /* Margin to push it down past the fixed navbar */
+            margin-top: 5rem; 
+            padding: 1.5rem 0;
+            /* Simple dark color rectangle for visual separation */
+            background-color: rgba(26, 2, 53, 0.7); 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .content-container {
+            flex-grow: 1;
+            /* Removed excessive padding-top as the header now provides space */
+            padding-bottom: 6rem;
+            padding-top: 1rem; /* Small top padding for internal content */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ------------------ GALAXY ANIMATIONS ------------------ */
+        @keyframes star-twinkle {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes rotate-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ------------------ RING & PROMISES ------------------ */
+        #center-ring {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            animation: rotate-slow 60s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 2s ease-in-out;
+            box-shadow: 0 0 50px rgba(189, 107, 255, 0.5);
+        }
+
+        .promise-crystal {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 2rem;
+            transition: transform 0.3s, text-shadow 0.3s;
+            text-shadow: 0 0 10px #d8b4fe; /* Initial purple glow */
+        }
+        
+        .promise-crystal:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 20px #ff00ff;
+        }
+
+        .opened {
+            font-size: 2.2rem;
+            text-shadow: 0 0 30px #f97316, 0 0 40px #f43f5e; /* Golden/Pink Glow */
+            transform: scale(1.1);
+        }
+
+        /* ------------------ COMPLETION ------------------ */
+        .completed-glow {
+            animation: final-glow 2s infinite alternate;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            box-shadow: 0 0 100px rgba(252, 211, 77, 0.8), 0 0 200px rgba(252, 211, 77, 0.5);
+            border-color: #fcd34d;
+        }
+        @keyframes final-glow {
+            from { box-shadow: 0 0 80px rgba(252, 211, 77, 0.6); }
+            to { box-shadow: 0 0 120px rgba(252, 211, 77, 1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar (Fixed) -->
+    <nav class="navbar fixed top-0 left-0 right-0 p-4 z-50 rounded-b-xl shadow-lg">
+        <div class="flex justify-end space-x-4">
+            <!-- 💌 Back → Page 5 (page5.html) -->
+            <a href="page5.html" class="nav-link text-pink-300">
+                <span class="mr-1">💌</span> Back to Notes
+            </a>
+            <!-- 💫 Next → Page 7 (page7.html) - Hidden until completion -->
+            <a href="page7.html" id="next-page-link" class="nav-link text-green-300 hidden">
+                <span class="mr-1">💫</span> Next Page
+            </a>
+            <!-- 💍 Replay Promises → reload page -->
+            <a href="#" onclick="window.location.reload();" class="nav-link text-purple-300">
+                <span class="mr-1">💍</span> Replay Promises
+            </a>
+            <!-- 🕊️ About → # (optional static info) -->
+            <a href="#" class="nav-link text-blue-300">
+                <span class="mr-1">🕊️</span> About
+            </a>
+        </div>
+    </nav>
+
+    <!-- New Header Section (The colored rectangle with the title) -->
+    <header class="page-header">
+        <h1 class="text-5xl font-extrabold text-white mb-2 drop-shadow-md">
+            Promise Chamber 💍
+        </h1>
+        <p class="text-xl text-purple-300 max-w-2xl drop-shadow-sm italic">
+            "Eternal Vows of Love"
+        </p>
+    </header>
+
+    <!-- Main Content: Promise Chamber Interactive Area -->
+    <main class="content-container p-4">
+        
+        <!-- Galaxy/Aesthetic Elements (Stars) -->
+        <div id="galaxy-elements" class="absolute inset-0 pointer-events-none">
+            <!-- Stars will be injected here for visual effect -->
+        </div>
+
+        <!-- Promise Circle Centerpiece -->
+        <div id="ring-container" class="relative w-full h-[60vh] max-h-[600px] max-w-[600px] flex items-center justify-center">
+            
+            <!-- Central Rotating Ring -->
+            <div id="center-ring">
+                <!-- Inner Symbol (The eternal bond) -->
+                <span id="center-symbol" class="text-6xl text-purple-300 transition-all duration-1000">
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                    </svg>
+                </span>
+            </div>
+
+            <!-- Promise Crystals (Dynamically positioned) -->
+            <div id="promise-crystals">
+                <!-- Crystals will be injected here by JavaScript -->
+            </div>
+        </div>
+        <!-- End Promise Circle Centerpiece -->
+
+        <!-- Final Message Area (Initially Hidden) -->
+        <div id="final-vows" class="absolute inset-0 flex flex-col items-center justify-center hidden z-40 bg-black/40 backdrop-blur-md p-4 transition-opacity duration-1000">
+             <div class="text-center p-8 bg-white/10 rounded-2xl shadow-2xl border-4 border-yellow-300/50">
+                <p class="text-4xl md:text-5xl font-extrabold text-yellow-300 mt-4 animate-bounce">
+                    “You’re my forever, Sona 💍💖”
+                </p>
+                <p class="text-xl text-white/90 mt-4 italic">
+                    Now these promises are written forever... not in words, but in our souls 💫
+                </p>
+                <a href="page7.html" class="mt-8 inline-flex items-center justify-center px-8 py-3 text-lg font-bold rounded-full text-black bg-yellow-300 hover:bg-yellow-400 transition-all duration-300 shadow-xl shadow-yellow-500/50 transform hover:scale-105">
+                    Continue to Page 7
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for displaying the Promise -->
+    <div id="promise-modal" class="fixed inset-0 bg-black bg-opacity-70 z-[100] hidden items-center justify-center p-4" onclick="closeModal()">
+        <div class="modal-content rounded-xl p-8 max-w-lg w-full shadow-2xl relative border-4 border-purple-500 bg-white/95" onclick="event.stopPropagation()">
+            <h2 class="text-3xl font-bold text-purple-600 mb-4">Mera Vaada 💍</h2>
+            <p id="modal-promise" class="text-gray-800 text-xl leading-relaxed mb-6 font-semibold"></p>
+            
+            <button onclick="closeModal()" class="w-full py-3 bg-purple-500 text-white font-semibold rounded-lg hover:bg-purple-600 transition-colors">
+                Dil me mehfooz ho gaya ✨
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer Text -->
+    <footer class="fixed bottom-0 w-full p-4 bg-black/40 backdrop-blur-sm z-50 shadow-inner rounded-t-xl">
+        <div class="flex flex-col items-center justify-center">
+            <p class="text-sm text-purple-200 italic mb-2">
+                "Wade sirf likhe nahi gaye, mehsoos kiye gaye… har ek promise me sirf Ruhi hai 💖 — Rishu"
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const promises = [
+            { id: 1, message: "Main kabhi bhi aapko ignore nahi karunga, chahe duniya kitni bhi busy ho.", opened: false },
+            { id: 2, message: "Aapka gussa, aapki narazgi — sab mujhe manzoor, bas aap meri zindagi me rahiyega.", opened: false },
+            { id: 3, message: "Main har khushi me aapka haath pakadke chalunga, har dukh me kandha banunga.", opened: false },
+            { id: 4, message: "Main kabhi jhoot nahi bolunga, aur har baat dil se kahunga.", opened: false },
+            { id: 5, message: "Main aapke sapne poore karne me aapka sabse bada support banunga.", opened: false },
+            { id: 6, message: "Main aapke bina apni zindagi soch bhi nahi sakta, aur kabhi sochunga bhi nahi.", opened: false },
+            { id: 7, message: "Main hamesha aapko respect karunga — chahe time, distance, ya situation koi bhi ho.", opened: false },
+            { id: 8, message: "Aur sabse bada wada — main hamesha aapke liye wahi Rishu rahunga jisse aapne pyar kiya tha.", opened: false },
+        ];
+
+        const totalPromises = promises.length;
+        let openedPromises = 0;
+
+        const promiseCrystalsContainer = document.getElementById('promise-crystals');
+        const modal = document.getElementById('promise-modal');
+        const modalPromise = document.getElementById('modal-promise');
+        const finalVows = document.getElementById('final-vows');
+        const centerRing = document.getElementById('center-ring');
+        const centerSymbol = document.getElementById('center-symbol');
+        const nextPageLink = document.getElementById('next-page-link');
+
+
+        // Function to create and position the crystal elements
+        function renderPromises() {
+            const centerX = 150; // Half of #center-ring width (300px)
+            const centerY = 150; // Half of #center-ring height (300px)
+            const radius = 200; // Distance from the center
+
+            promises.forEach((promise, index) => {
+                // Calculate position around the circle
+                const angle = (index / totalPromises) * 2 * Math.PI;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                const crystal = document.createElement('div');
+                crystal.className = 'promise-crystal absolute';
+                crystal.style.left = `calc(50% + ${x - centerX}px - 25px)`; // Position relative to parent container
+                crystal.style.top = `calc(50% + ${y - centerY}px - 25px)`;   // 25px is half the crystal width/height
+                
+                // Initial symbol (Crystal)
+                crystal.innerHTML = '💎'; 
+                crystal.setAttribute('data-id', promise.id);
+                
+                crystal.onclick = () => openPromise(promise.id, crystal);
+                promiseCrystalsContainer.appendChild(crystal);
+            });
+        }
+
+        // Function to open the promise modal
+        function openPromise(id, crystalElement) {
+            const promiseIndex = promises.findIndex(p => p.id === id);
+            const promise = promises[promiseIndex];
+
+            // Set modal content
+            modalPromise.textContent = promise.message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            // Mark as opened
+            if (!promise.opened) {
+                promise.opened = true;
+                openedPromises++;
+
+                // Visual feedback: change crystal to a glowing heart
+                crystalElement.innerHTML = '💖';
+                crystalElement.classList.add('opened');
+
+                // Check for completion
+                if (openedPromises === totalPromises) {
+                    setTimeout(showCompletion, 1500);
+                }
+            }
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Function to handle page completion
+        function showCompletion() {
+            // Stop the rotation and apply the golden glow
+            centerRing.classList.remove('animate-spin');
+            centerRing.classList.add('completed-glow');
+            
+            // Change the central symbol to a golden ring
+            centerSymbol.innerHTML = '💍';
+            centerSymbol.classList.add('text-yellow-400');
+            
+            // Show the final message overlay
+            finalVows.classList.remove('hidden');
+            finalVows.classList.add('flex');
+            
+            // Show the Next Page button in the navbar
+            nextPageLink.classList.remove('hidden');
+            
+            // Disable further clicks on the promises
+            promiseCrystalsContainer.style.pointerEvents = 'none';
+        }
+
+        // Function to inject floating stars/nebula elements
+        function createGalaxyEffect() {
+            const galaxy = document.getElementById('galaxy-elements');
+            const elementEmojis = ['✨', '💫', '🌟', '🌌'];
+            for (let i = 0; i < 40; i++) {
+                const element = document.createElement('span');
+                element.innerHTML = elementEmojis[Math.floor(Math.random() * elementEmojis.length)];
+                element.className = 'absolute text-xl pointer-events-none opacity-0';
+                
+                const size = 10 + Math.random() * 20;
+                element.style.fontSize = `${size}px`;
+                element.style.left = `${Math.random() * 100}vw`;
+                element.style.top = `${Math.random() * 100}vh`;
+                element.style.animation = `star-twinkle ${2 + Math.random() * 3}s ease-in-out infinite alternate`;
+                element.style.animationDelay = `-${Math.random() * 5}s`;
+                
+                galaxy.appendChild(element);
+            }
+        }
+
+
+        // Initialize the page
+        window.onload = function() {
+            renderPromises();
+            createGalaxyEffect();
+            // Start rotation animation once all elements are in place
+            centerRing.classList.add('animate-spin');
+        }
+    </script>
+</body>
+</html>

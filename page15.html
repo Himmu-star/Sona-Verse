@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAGE 15: World of Forever</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Three.js for 3D Globe -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'cosmic-blue': '#001a47',
+                        'love-pink': '#ff79c6',
+                        'star-gold': '#ffd700',
+                        'dark-space': '#00000a',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        twinkle: {
+                            '0%, 100%': { opacity: '0.2' },
+                            '50%': { opacity: '1' },
+                        },
+                        orbit: {
+                            '0%': { transform: 'rotate(0deg) translateX(25vh) rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg) translateX(25vh) rotate(-360deg)' },
+                        },
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 1.5s ease-out forwards',
+                        twinkle: 'twinkle 2s infinite alternate ease-in-out',
+                        orbit: 'orbit 20s linear infinite',
+                    },
+                },
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #00000a; /* Dark Space */
+            color: white;
+            min-height: 100vh;
+            /* Removed 'overflow: hidden' to allow scrolling */
+        }
+        
+        /* Star Field */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 5px #ffeb3b;
+            animation: twinkle 1s infinite alternate;
+        }
+
+        /* Shooting Star Effect */
+        @keyframes shootingStar {
+            0% {
+                transform: translateX(100vw) translateY(-100vh) rotate(-45deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-100vw) translateY(100vh) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+        .shooting-star {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: linear-gradient(90deg, #ffeb3b, rgba(255, 255, 255, 0));
+            border-radius: 50%;
+            animation: shootingStar 8s linear infinite;
+            pointer-events: none;
+        }
+
+        /* Orbiting Text Container */
+        #orbit-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px; /* Reference size */
+            height: 10px;
+        }
+        
+        /* Orbiting Text */
+        #orbit-text {
+            position: absolute;
+            transform-origin: 0 0;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px #ff79c6;
+            color: #ff79c6;
+            animation: orbit 20s linear infinite;
+        }
+
+        /* Globe Zoom Overlay */
+        #globe-overlay {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 50;
+        }
+
+    </style>
+</head>
+<body class="font-sans flex flex-col items-center p-4">
+
+    <!-- Star Field Setup -->
+    <div id="star-field"></div>
+    <div class="shooting-star" style="top: 10%; left: 80%; animation-delay: 2s;"></div>
+    <div class="shooting-star" style="top: 50%; left: 10%; animation-delay: 6s;"></div>
+
+    <!-- 3D Canvas for Globe (Interactivity Target) -->
+    <canvas id="globe-canvas" class="w-full h-[60vh] md:h-[70vh] cursor-pointer" style="display: block;"></canvas>
+
+    <!-- Orbiting Text (CSS Animation) -->
+    <div id="orbit-container">
+        <div id="orbit-text">Rishu ❤️ Ruhi</div>
+    </div>
+
+    <!-- Main Text Content (Below Globe) -->
+    <main class="w-full max-w-xl text-center z-10 py-8">
+        
+        <!-- Poetic Prayer Text -->
+        <div id="poetic-text-container" class="text-xl sm:text-2xl font-light text-star-gold space-y-4 mb-8">
+            <!-- Content injected by JavaScript line-by-line -->
+        </div>
+
+        <!-- Emotional Subtext -->
+        <div id="subtext" class="opacity-0 text-lg italic text-love-pink animate-fadeIn" style="animation-delay: 4.5s;">
+            “Even if the whole world changes its path…”
+            <p class="mt-2 text-2xl font-semibold">“My orbit will always circle around you, Sona 💖”</p>
+        </div>
+    </main>
+
+    <!-- Interactive Globe Message Overlay -->
+    <div id="globe-overlay" class="flex justify-center items-center">
+        <div class="p-8 sm:p-12 rounded-2xl text-center bg-dark-space border border-love-pink shadow-2xl">
+            <p class="text-2xl sm:text-3xl font-extrabold mb-4 text-star-gold">
+                “Our love has no borders, no ends — only one direction… Forever 💞”
+            </p>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <footer class="w-full max-w-xl flex justify-between items-center py-6 z-10 mt-auto">
+        <a href="page14.html" class="text-love-pink/70 hover:text-love-pink transition duration-300 transform hover:scale-105 font-semibold">
+            ⬅️ Back to Page 14
+        </a>
+        <a href="page16.html" class="text-star-gold hover:text-love-pink transition duration-300 transform hover:scale-105 font-bold text-lg">
+            Next Page ➡️
+        </a>
+    </footer>
+
+    <script>
+        // --- TEXT DISPLAY LOGIC ---
+        const poeticLines = [
+            "No matter how far we travel…",
+            "No matter how many worlds we cross…",
+            "You’ll always be my center, my home, my forever. 💫",
+            // The Rishu ❤️ Ruhi text written in stars is achieved visually via the orbiting text
+        ];
+        
+        const poeticContainer = document.getElementById('poetic-text-container');
+        
+        function displayPoeticText() {
+            poeticLines.forEach((line, index) => {
+                const p = document.createElement('p');
+                p.textContent = line;
+                p.className = 'opacity-0 animate-fadeIn';
+                p.style.animationDelay = `${0.5 + (index * 1.5)}s`;
+                poeticContainer.appendChild(p);
+            });
+        }
+
+        // --- STAR FIELD GENERATION ---
+        function createStars() {
+            const starField = document.getElementById('star-field');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = `${Math.random() * 2 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.top = `${Math.random() * 100}vh`;
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.animationDuration = `${Math.random() * 3 + 1}s`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                starField.appendChild(star);
+            }
+        }
+
+
+        // --- THREE.JS GLOBE LOGIC ---
+        let scene, camera, renderer, globe;
+        let rotationSpeed = 0.005;
+        let isSpinning = true;
+        const canvas = document.getElementById('globe-canvas');
+        const overlay = document.getElementById('globe-overlay');
+
+        function initThree() {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            // Scene setup
+            scene = new THREE.Scene();
+            
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            camera.position.z = 2.5;
+
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(width, height);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 3, 5);
+            scene.add(directionalLight);
+
+            // Globe (Ocean)
+            const oceanGeometry = new THREE.SphereGeometry(1, 64, 64);
+            const oceanMaterial = new THREE.MeshPhongMaterial({
+                color: 0x004488,
+                specular: 0x222222,
+                shininess: 5,
+            });
+            globe = new THREE.Mesh(oceanGeometry, oceanMaterial);
+            scene.add(globe);
+
+            // Continents (Simplified Golden Mesh)
+            const landGeometry = new THREE.SphereGeometry(1.005, 32, 32); // Slightly larger
+            const landMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xffd700, 
+                wireframe: true, // Wireframe for a "golden continents" outline look
+                opacity: 0.1,
+                transparent: true
+            });
+            const landMesh = new THREE.Mesh(landGeometry, landMaterial);
+            globe.add(landMesh); // Add continents to the main globe object
+
+            // Event listener for interaction
+            canvas.addEventListener('click', handleGlobeClick, false);
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function onWindowResize() {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        function handleGlobeClick() {
+            if (!isSpinning) return;
+
+            isSpinning = false;
+            rotationSpeed = 0; // Stop rotation
+
+            // Zoom in effect
+            new TWEEN.Tween(camera.position)
+                .to({ z: 1.5 }, 1000)
+                .easing(TWEEN.Easing.Quadratic.Out)
+                .start();
+
+            // Show message
+            overlay.style.opacity = '1';
+
+            // After a pause, zoom out and resume rotation
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                
+                new TWEEN.Tween(camera.position)
+                    .to({ z: 2.5 }, 1000)
+                    .easing(TWEEN.Easing.Quadratic.In)
+                    .onComplete(() => {
+                        isSpinning = true;
+                        rotationSpeed = 0.005;
+                    })
+                    .start();
+            }, 3000); // Display message for 3 seconds
+        }
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            TWEEN.update(); // Update TWEEN for camera animation
+
+            if (isSpinning && globe) {
+                globe.rotation.y += rotationSpeed;
+            }
+            renderer.render(scene, camera);
+        }
+        
+        // Simple TWEEN implementation (for the zoom effect)
+        var TWEEN = {
+            _tweens: [],
+            update: function(time) {
+                var i = 0;
+                while (i < TWEEN._tweens.length) {
+                    if (TWEEN._tweens[i].update(time)) {
+                        i++;
+                    } else {
+                        TWEEN._tweens.splice(i, 1);
+                    }
+                }
+            },
+            Tween: function(object) {
+                var _object = object;
+                var _valuesStart = {};
+                var _valuesEnd = {};
+                var _duration = 1000;
+                var _easingFunction = TWEEN.Easing.Linear.None;
+                var _onCompleteCallback = null;
+
+                this.to = function(properties, duration) {
+                    _valuesEnd = properties;
+                    if (duration !== undefined) {
+                        _duration = duration;
+                    }
+                    return this;
+                };
+
+                this.easing = function(easing) {
+                    _easingFunction = easing;
+                    return this;
+                };
+                
+                this.onComplete = function(callback) {
+                    _onCompleteCallback = callback;
+                    return this;
+                    // Removed 'return this;' from here as it's redundant
+                };
+
+                this.start = function() {
+                    TWEEN._tweens.push(this);
+                    for (var prop in _valuesEnd) {
+                        _valuesStart[prop] = _object[prop];
+                    }
+                    this._startTime = performance.now();
+                    return this;
+                };
+
+                this.update = function(time) {
+                    time = time !== undefined ? time : performance.now();
+                    var elapsed = time - this._startTime;
+                    var t = Math.min(1, elapsed / _duration);
+                    var value = _easingFunction(t);
+
+                    for (var prop in _valuesEnd) {
+                        _object[prop] = _valuesStart[prop] + (_valuesEnd[prop] - _valuesStart[prop]) * value;
+                    }
+
+                    if (t === 1) {
+                        if (_onCompleteCallback !== null) {
+                            _onCompleteCallback(_object);
+                        }
+                        return false;
+                    }
+                    return true;
+                };
+            }
+        };
+
+        TWEEN.Easing = {
+            Linear: {
+                None: function(k) { return k; }
+            },
+            Quadratic: {
+                In: function(k) { return k * k; },
+                Out: function(k) { return k * (2 - k); }
+            }
+        };
+
+        window.onload = function() {
+            // Initialize all components
+            createStars();
+            initThree();
+            animate();
+            displayPoeticText();
+            
+            // Adjust canvas size to fit container width initially
+            onWindowResize();
+        };
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SONAverse — The Sorryverse</title>
+  <style>  
+    :root{
+      --bg:#f0f6fa;
+      --soft-blue:#cfe8f6;
+      --pink:#ff7eb6;
+      --muted:#7b8ea6;
+      --glass: rgba(255,255,255,0.06);
+      --text:#333; /* Adjusted for light background */
+      --maxw:1100px;
+      --vibrant-red:#ff3366; /* New vibrant red/pink for text */
+    }
+    /* Removed overflow:hidden to allow scrolling, if necessary */
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;color:var(--text);background:linear-gradient(180deg,#e9f2f8,#f6eef6);box-sizing:border-box}
+
+    /* Layout */
+    .wrap{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box}
+    .container{width:100%;max-width:var(--maxw);position:relative;padding:36px;border-radius:18px;box-shadow:0 30px 80px rgba(9,20,34,0.12);background:linear-gradient(180deg,rgba(255,255,255,0.6), rgba(255,255,255,0.42));backdrop-filter: blur(8px)}
+
+    /* Glass window + rain surface */
+    .window{
+      position:relative;height:560px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg, rgba(15,40,60,0.03), rgba(255,255,255,0.04));
+      display:flex;align-items:center;justify-content:center;padding:36px;box-sizing:border-box;border:1px solid rgba(255,255,255,0.06)
+    }
+
+    /* Rain layer (drops) */
+    .drops{position:absolute;inset:0;pointer-events:auto}
+    .drop{position:absolute;width:52px;height:68px;background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.95) 2%, rgba(255,255,255,0.25) 12%, rgba(255,255,255,0.06) 40%, transparent 60%), linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));border-radius:40%/50%;box-shadow:inset -6px -10px 16px rgba(0,0,0,0.12);transform-origin:center;opacity:0.95;cursor:crosshair;transition:transform 0.6s ease, opacity 0.45s ease}
+    .drop.small{width:34px;height:44px}
+    .drop.big{width:68px;height:86px}
+
+    .drop.wiped{opacity:0;transform:translateY(8px) scale(0.92)}
+
+    /* Hidden message under drops (Moved higher to avoid heart overlap) */
+    .msg{position:absolute;left:50%;transform:translateX(-50%);top:8%; /* Adjusted from 18% */ width:85%;text-align:center;color:var(--vibrant-red);font-size:22px;font-weight:600;pointer-events:none;z-index:7}
+    .msg-line{opacity:0;transition:opacity 0.8s ease, transform 0.8s ease;transform:translateY(8px);color:var(--vibrant-red);} /* Set to red */
+    .msg-line.show{opacity:1;transform:translateY(0)}
+
+    /* Cracked heart */
+    .heart-wrap{position:relative;z-index:6;display:flex;align-items:center;justify-content:center;flex-direction:column}
+    .heart-svg{width:240px;height:240px;filter:drop-shadow(0 0 40px var(--pink));transition:filter 0.6s ease}
+    .cracks{stroke:#ffbfd3;stroke-width:1.6;opacity:1;transition:opacity 0.9s ease}
+    .heart-glow{mix-blend-mode:screen;filter:blur(20px);opacity:0.5}
+    .heart-healed{transform:scale(1.06);transition:transform 0.9s cubic-bezier(.2,.9,.2,1)}
+
+    /* Intro text */
+    .intro{position:absolute;top:36px;left:36px;color:var(--muted);font-size:18px}
+    .intro h3{margin:0 0 8px 0}
+    .intro p{margin:0;color:var(--muted)}
+
+    /* Continue button - UPDATED TEXT COLOR TO BLACK */
+    .cta{margin-top:20px;padding:12px 22px;border-radius:12px;border:none;background:linear-gradient(90deg,var(--vibrant-red),var(--pink));color:var(--text);font-weight:700;cursor:pointer;box-shadow:0 8px 26px rgba(255, 100, 150, 0.4);transition:transform 0.3s ease}
+    .cta:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255, 100, 150, 0.6)}
+
+    /* Pointer trail */
+    .trail{position:fixed;left:0;top:0;pointer-events:none;mix-blend-mode:screen}
+
+    /* Silhouette flash */
+    .silhouette{position:absolute;z-index:4;width:220px;height:320px;border-radius:12px;left:calc(50% - 110px);top:10%;opacity:0;pointer-events:none;background:radial-gradient(ellipse at center, rgba(255,255,255,0.06), transparent 40%), linear-gradient(180deg, rgba(255,150,180,0.04), rgba(180,160,255,0.02));backdrop-filter: blur(2px);transition:opacity 0.4s ease}
+
+    /* Navbar */
+    .nav{position:absolute;top:18px;right:22px;z-index:8;display:flex;gap:8px}
+    .nav a{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.06);text-decoration:none;color:var(--text);font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:transform 0.2s ease}
+    .nav a:hover{box-shadow:0 8px 24px rgba(182,140,255,0.06);transform:translateY(-2px)}
+
+    /* Footer */
+    .footer{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);color:var(--muted);font-size:14px;opacity:0.9}
+
+    /* small responsive tweaks */
+    @media (max-width:720px){.window{height:640px;padding:20px}.heart-svg{width:200px;height:200px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="container">
+
+      <div class="intro">
+        <h3>🌧️💖 The Sorryverse — Where Hearts Heal</h3>
+        <p>Calm, warm, and healing — help me wipe the tears, Sona.</p>
+      </div>
+
+      <nav class="nav">
+        <!-- Link to Index.html (Back to Portal) -->
+        <a href="index.html">💖 Back to Portal</a>
+        <!-- Link to page3.html (Next) -->
+        <a href="#" id="toPage3">💫 Next</a>
+        <a href="#">🕊️ About</a>
+        <a href="#" id="healAgain">💧 Heal Again</a>
+      </nav>
+
+      <div class="window" id="window">
+
+        <!-- Hidden messages (center) -->
+        <div class="msg" id="msg">
+          <div class="msg-line" id="line1">I’m sorry sona wo har baar ke liye jab hum aapko hurt kiye hai…</div>
+          <div class="msg-line" id="line2">Hum kabhi aapko sad nahi dekhna chahte…</div>
+          <div class="msg-line" id="line3">Aap humesha muskurate raho 💞</div>
+          <div class="msg-line" id="line4">Aap naraj hote hai to lagta hai sab kuchh ruk sa gaya hai…</div>
+          <div class="msg-line" id="line5">Isliye first shuruwat pichhle galtiyon ke sorry se karte hai</div>
+        </div>
+
+        <!-- Heart -->
+        <div class="heart-wrap" aria-hidden="true">
+          <svg class="heart-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="hgrad" x1="0" x2="1">
+                <stop offset="0" stop-color="#ff9ac6"/>
+                <stop offset="1" stop-color="#b68cff"/>
+              </linearGradient>
+            </defs>
+            <g transform="translate(0,6)">
+              <path id="heartPath" d="M100 170c-6-4-62-36-78-64C6 78 46 36 76 56c18 12 24 34 24 34s6-22 24-34c30-20 70 22 54 50-16 28-72 60-78 64z" fill="url(#hgrad)"/>
+              <g id="crackGroup" class="cracks">
+                <path d="M100 84c-2 6-6 20-8 30s2 18 4 22" fill="none"/>
+                <path d="M96 110c6 4 14 8 18 10" fill="none"/>
+                <path d="M104 80c-6 6-10 12-12 18" fill="none"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Raindrops layer -->
+        <div class="drops" id="drops" aria-hidden="false"></div>
+
+        <!-- silhouette flash -->
+        <div class="silhouette" id="silhouette"></div>
+
+      </div>
+
+      <div style="text-align:center;margin-top:20px;">
+        <!-- Continue button redirects to page3.html -->
+        <button class="cta" id="continueBtn" style="display:none">Continue to the Light 💫</button>
+      </div>
+
+      <div class="footer">Baarish ka har bund humko aapka yaad dilata hai,<br>Humara dil har waqt bas aapko chahta hai. 💞 — Rishu</div>
+    </div>
+  </div>
+
+  <canvas class="trail" id="trailCanvas"></canvas>
+
+  <audio id="rainAudio" loop preload="auto">
+    <!-- Replace source with your file path -->
+    <source src="rain-ambience.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    /* ---------- Config ---------- */
+    const TOTAL_DROPS = 12; // how many drops to create
+    const dropsContainer = document.getElementById('drops');
+    const msgLines = Array.from(document.querySelectorAll('.msg-line'));
+    const continueBtn = document.getElementById('continueBtn');
+    const crackGroup = document.getElementById('crackGroup');
+    const heartSvg = document.querySelector('.heart-svg');
+    const silhouette = document.getElementById('silhouette');
+    const rainAudio = document.getElementById('rainAudio');
+    const toPage3 = document.getElementById('toPage3');
+    const healAgain = document.getElementById('healAgain');
+    const windowEl = document.querySelector('.window'); // Get the window element
+
+    /* pointer trail canvas */
+    const trail = document.getElementById('trailCanvas');
+    const ctx = trail.getContext('2d');
+    let w = trail.width = window.innerWidth;
+    let h = trail.height = window.innerHeight;
+    const points = [];
+
+    /* play ambient audio if available */
+    (function tryPlayAudio(){
+      rainAudio.volume = 0.45;
+      // autoplay may be blocked — user will hear when they interact
+      rainAudio.play().catch(()=>{});
+    })();
+
+    /* create drops at random positions */
+    const drops = [];
+    function makeDrops(){
+      dropsContainer.innerHTML = '';
+      drops.length = 0;
+      // Get the current dimensions of the window to correctly position drops
+      const rw = dropsContainer.clientWidth || window.innerWidth;
+      const rh = dropsContainer.clientHeight || window.innerHeight;
+
+      for(let i=0;i<TOTAL_DROPS;i++){
+        const d = document.createElement('div');
+        d.className = 'drop';
+        // random size class
+        const r = Math.random();
+        if(r<0.2) d.classList.add('big');
+        else if(r>0.8) d.classList.add('small');
+
+        // random pos inside the window but avoid heart center area
+        const margin = 80;
+        let left, top;
+        // try to avoid central 300px area where heart sits (rw/2 +/- 150px)
+        do{
+          left = margin + Math.random() * (rw - margin*2);
+          top = margin + Math.random() * (rh - margin*2);
+        } while(Math.abs(left - rw/2) < 120 && Math.abs(top - rh/2) < 120);
+
+        d.style.left = left + 'px';
+        d.style.top = top + 'px';
+        d.dataset.index = i;
+        dropsContainer.appendChild(d);
+        drops.push({el:d,left,top,wiped:false});
+
+        // small gentle drop sway animation
+        d.animate([
+          {transform:'translateY(0) rotate(0deg)'},
+          {transform:`translateY(${6+Math.random()*10}px) rotate(${(Math.random()*10-5)}deg)`},
+          {transform:'translateY(0) rotate(0deg)'}
+        ], {duration:4000+(Math.random()*3000),iterations:Infinity});
+      }
+    }
+
+    makeDrops();
+
+    /* Wiping detection: if pointer comes within radius of drop center -> reveal */
+    function pointerPos(e){
+      if(e.touches && e.touches[0]) return {x:e.touches[0].clientX, y:e.touches[0].clientY};
+      return {x:e.clientX, y:e.clientY};
+    }
+
+    function checkWipeAt(x,y){
+      drops.forEach((d, idx)=>{
+        if(d.wiped) { return; }
+        const rect = d.el.getBoundingClientRect();
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
+        const dist = Math.hypot(cx - x, cy - y);
+        const radius = Math.max(rect.width, rect.height) * 0.6;
+        if(dist < radius){
+          // mark wiped
+          d.wiped = true;
+          d.el.classList.add('wiped');
+          revealLine(idx);
+          // play soft pop sound? (omitted) 
+        }
+      });
+      // count wiped
+      const total = drops.filter(d=>d.wiped).length;
+      if(total === drops.length) onAllWiped();
+    }
+
+    /* Reveal message lines in sequence depending on how many wiped */
+    function revealLine(idx){
+      // map idx to line index in a round-robin but ensure order for emotional pacing
+      const revealedNow = msgLines.findIndex(l=>l.classList.contains('show')===false);
+      if(revealedNow !== -1){
+        const line = msgLines[revealedNow];
+        setTimeout(()=>line.classList.add('show'), 180);
+      }
+
+      // occasional silhouette flash
+      if(Math.random() < 0.28){
+        silhouette.style.opacity = 0.98;
+        setTimeout(()=>silhouette.style.opacity = 0, 900);
+      }
+    }
+
+    /* When all drops wiped */
+    function onAllWiped(){
+      // heal heart: fade cracks and enlarge slightly
+      crackGroup.style.opacity = 0;
+      heartSvg.classList.add('heart-healed');
+
+      // small glow and then show final text + button
+      setTimeout(()=>{
+        // Ensure all initial hidden lines are shown
+        msgLines.forEach(l=>l.classList.add('show')); 
+        
+        // Final message overlays (Moved much higher to avoid heart overlap - FIX)
+        const final1 = document.createElement('div');
+        final1.classList.add('final-overlay');
+        final1.style.position='absolute';final1.style.left='50%';final1.style.top='30%'; /* FIX: Adjusted from 50% to 30% */ final1.style.transform='translate(-50%,-50%)';final1.style.color='var(--pink)';final1.style.fontSize='20px';final1.style.fontWeight='700';final1.style.textAlign='center';final1.textContent = "You just healed my heart, Ruhi…";
+        windowEl.appendChild(final1);
+        final1.animate([{opacity:0,transform:'translate(-50%,-44%)'},{opacity:1,transform:'translate(-50%,-50%)'}],{duration:800,fill:'forwards'});
+
+        setTimeout(()=>{
+          const final2 = document.createElement('div');
+          final2.classList.add('final-overlay');
+          final2.style.position='absolute';final2.style.left='50%';final2.style.top='38%'; /* FIX: Adjusted from 58% to 38% */ final2.style.transform='translate(-50%,-50%)';final2.style.color='white';final2.style.fontSize='16px';final2.style.opacity=0;final2.style.textAlign='center';final2.textContent = "Thank you for being my peace, my home, my everything 💖";windowEl.appendChild(final2);final2.animate([{opacity:0},{opacity:1}],{duration:900,fill:'forwards'});
+
+          // show continue button (FIX: Ensures button visibility by being the last step)
+          setTimeout(()=>{continueBtn.style.display='inline-block';},1000);
+        },800);
+
+      },600);
+
+      // small particle merge animation: drops moving to heart
+      drops.forEach((d,i)=>{
+        const el = d.el;
+        const rect = el.getBoundingClientRect();
+        const heartRect = heartSvg.getBoundingClientRect();
+        const cx = heartRect.left + heartRect.width/2;
+        const cy = heartRect.top + heartRect.height/2;
+        const dx = cx - (rect.left + rect.width/2);
+        const dy = cy - (rect.top + rect.height/2);
+        el.style.transition = 'transform 0.9s cubic-bezier(.2,.9,.2,1), opacity 0.9s ease';
+        el.style.transform = `translate(${dx}px, ${dy}px) scale(0.3)`;
+        el.style.opacity = 0;
+        setTimeout(()=>el.remove(), 1000);
+      });
+
+      // make heart pulse normally (simulate healed)
+      heartSvg.animate([{transform:'scale(1)'},{transform:'scale(1.04)'},{transform:'scale(1)'}],{duration:1400,iterations:4});
+    }
+
+    /* Pointer / touch handlers to detect wipe and draw trail */
+    let isDown = false;
+    function onPointerDown(e){ isDown = true; const p = pointerPos(e); checkWipeAt(p.x, p.y); addPoint(p.x,p.y); }
+    function onPointerUp(e){ isDown = false; }
+    function onPointerMove(e){ const p = pointerPos(e); if(isDown) checkWipeAt(p.x,p.y); addPoint(p.x,p.y); }
+
+    ['pointerdown','touchstart'].forEach(ev=>window.addEventListener(ev,(e)=>{ onPointerDown(e); tryPlayAudio(); }));
+    ['pointerup','touchend','pointercancel','touchcancel'].forEach(ev=>window.addEventListener(ev,(e)=>{ onPointerUp(e); }));
+    ['pointermove','touchmove','mousemove'].forEach(ev=>window.addEventListener(ev,(e)=>{ onPointerMove(e); e.preventDefault && e.preventDefault(); }));
+
+    // also allow passive hover wiping (gentle)
+    window.addEventListener('mousemove',(e)=>{ checkWipeAt(e.clientX,e.clientY); });
+
+    /* Trail drawing */
+    function addPoint(x,y){ points.push({x,y,t:Date.now()}); if(points.length>80) points.shift(); }
+    function drawTrail(){ ctx.clearRect(0,0,w,h); ctx.globalCompositeOperation='lighter';
+      for(let i=0;i<points.length;i++){
+        const p = points[i]; const age = (Date.now()-p.t)/700; if(age>1) continue; const alpha = 1-age; const size = 18*(1-age);
+        ctx.beginPath(); ctx.arc(p.x,p.y,size,0,Math.PI*2); ctx.fillStyle = `rgba(255,130,170,${alpha*0.45})`; ctx.fill();
+      }
+      requestAnimationFrame(drawTrail);
+    }
+    drawTrail();
+
+    window.addEventListener('resize', ()=>{ w = trail.width = window.innerWidth; h = trail.height = window.innerHeight; makeDrops(); });
+
+    /* ---------- Navigation Updates ---------- */
+
+    // 1. Continue Button (Final CTA) -> Redirects to page3.html
+    continueBtn.addEventListener('click', ()=>{
+      window.location.href = 'page3.html';
+    });
+
+    // 2. Next Link (Navbar) -> Redirects only if heart is healed
+    toPage3.addEventListener('click',(e)=>{ 
+      e.preventDefault(); 
+      if (heartSvg.classList.contains('heart-healed')) {
+          window.location.href = 'page3.html';
+      } else {
+          console.error('Navigation blocked: The heart is not yet healed.');
+          e.currentTarget.animate([
+              { transform: 'translateY(0px)' },
+              { transform: 'translateY(-4px)' },
+              { transform: 'translateY(0px)' }
+          ], { duration: 300, easing: 'ease-in-out' });
+      }
+    });
+
+    // 3. Heal Again/Reset
+    healAgain.addEventListener('click',(e)=>{ e.preventDefault(); resetScene(); });
+
+    /* Reset for reheal */
+    function resetScene(){
+      // clear messages
+      msgLines.forEach(l=>l.classList.remove('show'));
+      crackGroup.style.opacity = 1;
+      heartSvg.classList.remove('heart-healed');
+      continueBtn.style.display='none';
+      
+      // FIX: Remove all temporary overlay messages (initial and final)
+      document.querySelectorAll('.window .final-overlay, .window .initial-overlay').forEach(el => el.remove());
+      
+      makeDrops();
+    }
+
+    /* initial gentle text reveal sequence (positioned higher) */
+    setTimeout(()=>{
+      const lines = ['Hum aapka dil kabhi nahi dukhana chahte…','par bhir bhi, Ruhi… aapko bahut baar mere wajah se hurt hota hai 💔','Humko maaf kar do , Sona 💖 — just wipe the tears away…'];
+      const container = document.getElementById('window');
+      lines.forEach((t,i)=>{
+        const el = document.createElement('div'); 
+        el.classList.add('initial-overlay'); // FIX: Added class for cleanup
+        el.style.position='absolute'; el.style.left='50%'; el.style.top=(18 + i*6)+'%'; el.style.transform='translateX(-50%)'; el.style.color='rgba(255,100,140,0.9)'; el.style.fontSize='18px'; el.style.fontWeight='700'; el.style.opacity=0; el.textContent = t; container.appendChild(el);
+        setTimeout(()=>{ el.animate([{opacity:0, transform:'translateX(-50%) translateY(-6px)'},{opacity:1, transform:'translateX(-50%) translateY(0)'}],{duration:700,fill:'forwards'}) }, 500 + i*700);
+      });
+    },600);
+
+    /* helper: play audio on first real interaction (autoplay policies) */
+    function tryPlayAudio(){ rainAudio.play().catch(()=>{}); }
+
+  </script>
+</body>
+</html>

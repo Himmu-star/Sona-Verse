@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAGE 11: The Hugverse</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'hug-dark': '#1e0a29', // Very dark purple/pink
+                        'hug-pink': '#e91e63', // Deep pink for hearts
+                        'hug-light': '#f8bbd0', // Light pink for glow
+                        'golden-warmth': '#ffc107',
+                    },
+                    keyframes: {
+                        heartBeat: {
+                            '0%, 100%': { transform: 'scale(1.0)', 'box-shadow': '0 0 25px rgba(233, 30, 99, 0.9)' },
+                            '50%': { transform: 'scale(1.05)', 'box-shadow': '0 0 50px rgba(248, 187, 208, 1)' },
+                        },
+                        floatUp: {
+                            '0%': { transform: 'translateY(100vh) translateX(-50%)', opacity: '0' },
+                            '50%': { opacity: '0.8' },
+                            '100%': { transform: 'translateY(-10vh) translateX(50%)', opacity: '0' },
+                        },
+                        buttonPulse: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.02)' },
+                        }
+                    },
+                    animation: {
+                        heartBeat: 'heartBeat 2s infinite ease-in-out',
+                        buttonPulse: 'buttonPulse 1.5s infinite alternate',
+                    },
+                },
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* Main Background Gradient */
+        #hug-background {
+            background: linear-gradient(135deg, #1e0a29 0%, #301934 50%, #5d2568 100%);
+            transition: background-color 2s ease-in-out;
+        }
+
+        /* Floating Hearts Container */
+        .heart-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Floating Heart Styling and Animation Setup */
+        .floating-heart {
+            position: absolute;
+            color: #f8bbd0;
+            opacity: 0;
+            font-size: clamp(1rem, 2vw, 2.5rem);
+            animation: floatUp 15s linear infinite;
+        }
+
+        /* Custom Delays for Floating Hearts */
+        .floating-heart:nth-child(1) { left: 10%; animation-delay: 1s; }
+        .floating-heart:nth-child(2) { left: 40%; animation-delay: 5s; }
+        .floating-heart:nth-child(3) { left: 70%; animation-delay: 3s; }
+        .floating-heart:nth-child(4) { left: 25%; animation-delay: 7s; }
+        .floating-heart:nth-child(5) { left: 85%; animation-delay: 2s; }
+        .floating-heart:nth-child(6) { left: 55%; animation-delay: 6s; }
+        .floating-heart:nth-child(7) { left: 5%; animation-delay: 4s; }
+        .floating-heart:nth-child(8) { left: 90%; animation-delay: 8s; }
+
+        /* Big 3D Heart Styling */
+        #main-heart {
+            color: #e91e63;
+            text-shadow: 0 0 15px #f8bbd0;
+            transform-origin: center;
+            transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out, color 0.5s;
+            cursor: pointer;
+        }
+
+        /* Message Box Styling */
+        #message-overlay {
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+    </style>
+</head>
+<body id="hug-background" class="font-inter min-h-screen flex flex-col justify-between items-center text-white relative">
+    
+    <!-- Ambient Sound Placeholder -->
+    <!-- Ideally, this would be a subtle, non-disruptive heartbeat and hum track -->
+    <audio id="ambient-sound" loop muted autoplay>
+        <!-- Replace with actual soft ambient sound sources -->
+    </audio>
+
+    <!-- Floating Hearts Layer -->
+    <div class="heart-container">
+        <div class="floating-heart">💖</div>
+        <div class="floating-heart">💓</div>
+        <div class="floating-heart">❤️</div>
+        <div class="floating-heart">💞</div>
+        <div class="floating-heart">💖</div>
+        <div class="floating-heart">💓</div>
+        <div class="floating-heart">❤️</div>
+        <div class="floating-heart">💞</div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow w-full max-w-xl flex flex-col items-center justify-center p-4 z-20 text-center">
+        
+        <!-- Top Text -->
+        <p id="intro-text" class="text-xl sm:text-3xl font-light mb-12 opacity-0 transition-opacity duration-2000 ease-in-out">
+            When words fall short… hugs speak the loudest 💞
+        </p>
+
+        <!-- Center Heart -->
+        <div id="main-heart" class="text-7xl sm:text-[10rem] animate-heartBeat mb-12" onclick="handleHugClick()">
+            ❤️
+        </div>
+
+        <!-- Interactive Button -->
+        <button id="hug-button" class="bg-hug-pink hover:bg-hug-light text-white font-bold py-3 px-8 rounded-full shadow-lg transform active:scale-95 transition-all duration-300 animate-buttonPulse" onclick="handleHugClick()">
+            <span class="text-lg sm:text-xl">👉 Give Me a Hug 🤗</span>
+        </button>
+
+        <!-- Message Overlay (Hug Result and Next Button) -->
+        <div id="message-overlay" class="absolute inset-0 flex flex-col justify-center items-center backdrop-blur-sm bg-hug-dark/70 opacity-0 pointer-events-none">
+            <div id="hug-messages" class="p-8 rounded-lg text-center transform scale-105 transition-all duration-1000 ease-out">
+                <p class="text-3xl sm:text-5xl font-extrabold mb-4 text-golden-warmth drop-shadow-lg">
+                    Virtual Hug Sent Successfully 💖
+                </p>
+                <p class="text-xl sm:text-3xl italic text-hug-light font-medium">
+                    You’re my comfort, Sona 🤗💓
+                </p>
+                
+                <!-- NEW: Next Page Button -->
+                <a href="page12.html" id="next-page-link" 
+                   class="mt-8 inline-block bg-hug-light text-hug-dark font-extrabold py-3 px-8 rounded-full shadow-xl hover:bg-white transition duration-300 transform hover:scale-[1.02] opacity-0 text-lg">
+                    Continue the Journey ✨
+                </a>
+                <!-- END NEW -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Navbar/Footer (Minimal for an immersive experience) -->
+    <footer class="w-full text-center py-4 z-30">
+        <a href="page11.html" class="text-sm text-white/50 hover:text-white transition duration-300 transform hover:scale-105">
+            ☕ Back to Coffee Date
+        </a>
+    </footer>
+
+    <script>
+        const introText = document.getElementById('intro-text');
+        const mainHeart = document.getElementById('main-heart');
+        const hugButton = document.getElementById('hug-button');
+        const messageOverlay = document.getElementById('message-overlay');
+        const hugMessages = document.getElementById('hug-messages');
+        const background = document.getElementById('hug-background');
+        const ambientSound = document.getElementById('ambient-sound');
+        // NEW: Get the next page link element
+        const nextPageLink = document.getElementById('next-page-link');
+
+        // Initial fade-in for the main text
+        window.onload = function() {
+            // Mute the audio and attempt to play it (simulating soft ambience)
+            ambientSound.volume = 0.4;
+            ambientSound.play().catch(e => console.log("Ambient sound blocked:", e));
+
+            // Fade in text after a short delay
+            setTimeout(() => {
+                introText.classList.remove('opacity-0');
+            }, 1000);
+        };
+
+        // Handles the hug interaction
+        function handleHugClick() {
+            // Prevent double clicking
+            if (hugButton.disabled) return;
+            hugButton.disabled = true;
+
+            // 1. Stop button and heart animation
+            hugButton.classList.remove('animate-buttonPulse');
+            mainHeart.classList.remove('animate-heartBeat');
+            
+            // 2. Heart zoom in and glow
+            mainHeart.style.transform = 'scale(1.2)';
+            mainHeart.style.boxShadow = '0 0 100px #ffc107'; // Intense golden glow
+
+            // 3. Screen fills with warm light (by changing the background properties)
+            background.style.background = 'linear-gradient(135deg, #a73737 0%, #ff6666 50%, #ffcc80 100%)';
+
+            // 4. Show the message overlay and next button
+            setTimeout(() => {
+                messageOverlay.style.opacity = '1';
+                messageOverlay.style.pointerEvents = 'auto';
+                hugMessages.style.transform = 'scale(1)';
+                
+                // NEW: Make the next page button visible
+                nextPageLink.style.opacity = '1';
+            }, 500);
+
+            // Optional: Provide visual feedback on the button
+            hugButton.textContent = 'Hug Sent! 🤗';
+            hugButton.classList.add('bg-golden-warmth', 'shadow-2xl');
+        }
+    </script>
+</body>
+</html>

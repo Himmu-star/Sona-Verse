@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💌 Love Notes Chamber</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            /* Soft pastel pink gradient → light lavender glow */
+            background: linear-gradient(135deg, #fbcfe8 0%, #e9d5ff 50%, #f0f9ff 100%);
+            color: #4a4a4a;
+            overflow: hidden; /* Prevent scrolling for floating effect */
+        }
+
+        .navbar {
+            backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-link {
+            transition: all 0.3s;
+            padding: 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+        }
+
+        .content-container {
+            flex-grow: 1;
+            padding-top: 6rem;
+            padding-bottom: 6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ------------------ FLOATING ELEMENTS ------------------ */
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(15px, 20px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        @keyframes drift {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+
+        .floating-element {
+            position: absolute;
+            animation: float 8s ease-in-out infinite, drift 20s linear infinite;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        /* Adjustments for the drift animation to start and end properly */
+        .envelope {
+            animation: float 8s ease-in-out infinite, drift 20s linear infinite;
+        }
+
+        .petal {
+            animation: drift 30s linear infinite;
+            opacity: 0.7;
+        }
+
+        /* ------------------ MODAL/NOTES ------------------ */
+        .modal-content {
+            transform: scale(0.8);
+            opacity: 0;
+            animation: zoom-in 0.5s forwards;
+            background: rgba(255, 255, 255, 0.95);
+        }
+        @keyframes zoom-in {
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Special Confetti Burst */
+        @keyframes confetti-burst {
+            0% { transform: scale(0.1); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .confetti {
+            animation: confetti-burst 1s ease-out;
+            text-shadow: 0 0 10px #f9a8d4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar fixed top-0 left-0 right-0 p-4 z-50 rounded-b-xl shadow-lg">
+        <div class="flex justify-end space-x-4 text-gray-800">
+            <!-- 💖 Back → Page 4 (page4.html) -->
+            <a href="page4.html" class="nav-link text-pink-600">
+                <span class="mr-1">💖</span> Back
+            </a>
+            <!-- 💫 Next → Page 6 (page6.html) -->
+            <a href="page6.html" id="next-page-link" class="nav-link text-purple-600 hidden">
+                <span class="mr-1">💫</span> Next Page
+            </a>
+            <!-- 💌 Replay → reload page -->
+            <a href="#" onclick="window.location.reload();" class="nav-link text-gray-600">
+                <span class="mr-1">💌</span> Replay
+            </a>
+            <!-- 🌹 About → # (optional static info) -->
+            <a href="#" class="nav-link text-blue-600">
+                <span class="mr-1">🌹</span> About
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content: Floating Love Notes -->
+    <main class="content-container flex flex-col items-center justify-center p-4">
+        
+        <h1 class="text-5xl font-extrabold text-pink-700 text-center mb-2 drop-shadow-md">
+            Love Notes Chamber 💌
+        </h1>
+        <p class="text-xl text-gray-600/90 text-center mb-10 max-w-2xl drop-shadow-sm italic">
+            "Hidden Words of My Heart"
+        </p>
+        
+        <!-- Area where envelopes float -->
+        <div id="notes-area" class="w-full h-full absolute inset-0 opacity-80">
+            <!-- Envelopes and petals will be injected here -->
+        </div>
+
+        <!-- Completion Message Area (Initially Hidden) -->
+        <div id="completion-message" class="absolute inset-0 flex flex-col items-center justify-center hidden z-40 bg-white/30 backdrop-blur-sm p-4 rounded-xl">
+             <div class="text-center p-8 bg-white/95 rounded-2xl shadow-2xl border-4 border-pink-400">
+                <span class="text-7xl">🌟</span>
+                <p class="text-3xl md:text-5xl font-extrabold text-pink-600 mt-4 confetti">
+                    You’ve opened every corner of my heart, Ruhi 💖
+                </p>
+                <p class="text-xl text-gray-600 mt-4">
+                    Thank you for being my forever reason to smile 😚
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for displaying the Love Note -->
+    <div id="note-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[100] hidden items-center justify-center p-4" onclick="closeModal()">
+        <div class="modal-content rounded-xl p-8 max-w-lg w-full shadow-2xl relative border-4 border-pink-300" onclick="event.stopPropagation()">
+            <h2 id="modal-title" class="text-3xl font-bold text-pink-600 mb-4">Aapke Naam Ka Ek Paigaam ✨</h2>
+            <p id="modal-content" class="text-gray-700 text-xl leading-relaxed mb-6 font-semibold"></p>
+            
+            <!-- Special button for bonus note -->
+            <button id="special-button" onclick="showSpecialMessage()" class="hidden w-full py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors">
+                Click here for something special 💕
+            </button>
+
+            <!-- Regular close button -->
+            <button id="close-button" onclick="closeModal()" class="w-full py-3 bg-pink-500 text-white font-semibold rounded-lg hover:bg-pink-600 transition-colors">
+                Bandh karein aur baaki notes dekhein 💌
+            </button>
+            <div id="special-reveal" class="text-center mt-4 hidden">
+                 <p class="text-5xl font-extrabold text-pink-500 confetti">I Love You Sona ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Text -->
+    <footer class="fixed bottom-0 w-full p-4 bg-white/80 backdrop-blur-sm z-50 shadow-inner rounded-t-xl">
+        <div class="flex flex-col items-center justify-center">
+            <p class="text-sm text-gray-700 italic mb-2">
+                "Har lafz me sirf aapka naam likha hai, har saans me sirf aapka pyaar basa hai 💞 — Rishu"
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const loveNotes = [
+            { id: 1, message: "Mujhe duniya me sabse zyada sukoon tab milta hai jab aap meri baatein sunte ho 💖", special: false },
+            { id: 2, message: "Sona, tum meri life ki wo line ho jahan sab kuchh beautiful lagta hai 💞", special: false },
+            { id: 3, message: "Main jitna bhi busy rahu, dil me ek hi naam ghoomta rehta hai — Ruhi 💫", special: false },
+            { id: 4, message: "Tumhara gussa bhi itna cute lagta hai, dil karta hai bas gale laga lu 🫶", special: false },
+            { id: 5, message: "Aap meri zindagi ka wo chapter ho jise main kabhi end nahi karna chahta 💗", special: false },
+            { id: 6, message: "Har subah jab aankh khulta hai, sabse pehle dil me aapka khayal aata hai ☀️💖", special: false },
+            { id: 7, message: "Pyar likha ja sakta hai, par Ruhi ko mehsoos karna hi ek emotion hai 💞", special: false },
+            { id: 8, message: "Aap meri duniya ho, Sona — meri muskurahat, meri shanti, mera sab kuchh 💕", special: false },
+            { id: 9, message: "Mujhe har baar lagta hai — main itna lucky kaise ho gaya ki mujhe aap mil gayi 💫", special: false },
+            { id: 10, message: "Bas ek wada — chahe kuchh bhi ho jaye, main hamesha aapke saath rahunga 💍❤️", special: false },
+            { id: 11, message: "This is a decoy note. Don't worry, the real special one is waiting! 😉", special: false },
+            { id: 12, message: "Secret Message Inside! Click to discover 💕", special: true } // The bonus note
+        ];
+
+        const notesArea = document.getElementById('notes-area');
+        const modal = document.getElementById('note-modal');
+        const modalContent = document.getElementById('modal-content');
+        const specialButton = document.getElementById('special-button');
+        const closeButton = document.getElementById('close-button');
+        const specialReveal = document.getElementById('special-reveal');
+        const completionMessage = document.getElementById('completion-message');
+        const nextPageLink = document.getElementById('next-page-link');
+        
+        let openedNotes = 0;
+        const totalNotes = loveNotes.length;
+        const noteStates = new Array(totalNotes).fill(false); // Track if a note has been clicked
+
+        // Function to create a floating envelope
+        function createEnvelope(note, index) {
+            const size = 32 + Math.random() * 20; // Size between 32px and 52px
+            const envelope = document.createElement('div');
+            envelope.className = 'envelope absolute text-4xl hover:text-red-500 transition-colors duration-300';
+            envelope.innerHTML = '💌';
+            envelope.style.left = `${Math.random() * 80 + 10}vw`; // 10% to 90% of viewport width
+            envelope.style.top = `${Math.random() * 80 + 10}vh`;  // 10% to 90% of viewport height
+            envelope.style.animationDelay = `-${Math.random() * 10}s`; // Stagger animation start
+            envelope.style.fontSize = `${size}px`;
+            envelope.style.zIndex = note.special ? '30' : '20'; // Special note slightly higher
+
+            if (note.special) {
+                envelope.classList.add('animate-pulse', 'shadow-lg', 'text-yellow-400'); // Make special note glow
+                envelope.innerHTML = '🌟'; // Use a star for the special one
+            }
+
+            envelope.onclick = (e) => {
+                e.stopPropagation();
+                openNote(note, index, envelope);
+            };
+
+            notesArea.appendChild(envelope);
+        }
+
+        // Function to create floating petals (visual effect)
+        function createPetals() {
+            for (let i = 0; i < 20; i++) {
+                const petal = document.createElement('div');
+                const petalEmoji = ['🌸', '🌹', '✨', '💖'][Math.floor(Math.random() * 4)];
+                petal.className = 'petal absolute text-xl pointer-events-none';
+                petal.innerHTML = petalEmoji;
+                
+                const startX = Math.random() * 100;
+                const startY = Math.random() * 100 + 100; // Start below the screen
+                
+                petal.style.left = `${startX}vw`;
+                petal.style.top = `${startY}vh`;
+                petal.style.animationDelay = `-${Math.random() * 20}s`;
+                petal.style.animationDuration = `${15 + Math.random() * 15}s`;
+                
+                notesArea.appendChild(petal);
+            }
+        }
+
+        // Initialize envelopes and petals
+        loveNotes.forEach(createEnvelope);
+        createPetals();
+
+
+        // Function to open the note modal
+        function openNote(note, index, envelope) {
+            
+            // Reset modal state
+            modalContent.classList.remove('hidden');
+            specialButton.classList.add('hidden');
+            closeButton.classList.remove('hidden');
+            specialReveal.classList.add('hidden');
+            modalContent.style.color = 'black';
+
+            // Set content
+            modalContent.textContent = note.message;
+
+            if (note.special) {
+                modalContent.classList.add('hidden');
+                specialButton.classList.remove('hidden');
+            } else {
+                modalContent.classList.remove('hidden');
+            }
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            // Mark as opened if not already
+            if (!noteStates[index]) {
+                noteStates[index] = true;
+                openedNotes++;
+
+                // Visual feedback: change envelope to a heart
+                envelope.innerHTML = '❤️'; 
+                envelope.classList.remove('envelope');
+                envelope.classList.remove('animate-pulse', 'shadow-lg', 'text-yellow-400');
+                envelope.classList.add('text-red-500', 'text-5xl');
+
+                // Check for completion
+                if (openedNotes === totalNotes) {
+                    setTimeout(showCompletion, 1000);
+                }
+            }
+        }
+
+        // Function for the bonus surprise
+        function showSpecialMessage() {
+            modalContent.classList.add('hidden');
+            specialButton.classList.add('hidden');
+            closeButton.classList.remove('hidden');
+            
+            specialReveal.classList.remove('hidden');
+            // Play a little animation effect on the modal
+            const modalInner = document.querySelector('#note-modal > div');
+            modalInner.classList.add('border-yellow-500', 'animate-pulse');
+            
+            setTimeout(() => {
+                modalInner.classList.remove('border-yellow-500', 'animate-pulse');
+            }, 1500);
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Function to handle page completion
+        function showCompletion() {
+            // Hide the floating notes area
+            notesArea.style.display = 'none';
+
+            // Show the completion message
+            completionMessage.classList.remove('hidden');
+            completionMessage.classList.add('flex');
+            
+            // Show the Next Page button
+            nextPageLink.classList.remove('hidden');
+
+            // Optionally disable main content clicks
+            document.querySelector('.content-container').style.pointerEvents = 'none';
+        }
+
+        // Simple audio placeholder (using tone.js is not allowed as it requires separate files/complex setup for this task)
+        // I will rely on the dreamy aesthetic as the sound effect equivalent.
+
+    </script>
+</body>
+</html>

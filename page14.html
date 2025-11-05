@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAGE 14: Maa Durga's Blessing</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tinos:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Tinos', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'divine-gold': '#ffd700',
+                        'divine-red': '#8b0000',
+                        'aura-light': '#ffdd99',
+                        'deep-maroon': '#3d0707',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        glowPulse: {
+                            '0%, 100%': { 'box-shadow': '0 0 10px #ffd700, 0 0 20px #8b0000' },
+                            '50%': { 'box-shadow': '0 0 30px #ffd700, 0 0 40px #ffdd99' },
+                        },
+                        diyaFloat: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-5px) rotate(2deg)' },
+                        },
+                        eyeOpen: {
+                            '0%': { 'clip-path': 'inset(45% 0 45% 0)' },
+                            '100%': { 'clip-path': 'inset(0% 0 0% 0)' },
+                        }
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 1.5s ease-out forwards',
+                        glowPulse: 'glowPulse 3s infinite ease-in-out',
+                        diyaFloat: 'diyaFloat 4s infinite alternate ease-in-out',
+                        eyeOpen: 'eyeOpen 3s ease-out forwards',
+                    },
+                },
+            }
+        }
+    </script>
+    <style>
+        /* Divine Golden-Red Gradient Background */
+        body {
+            background: linear-gradient(180deg, #3d0707 0%, #8b0000 50%, #ffd700 100%);
+            min-height: 100vh;
+            color: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Subtle Temple Bells in Corners */
+        .temple-bell {
+            position: absolute;
+            font-size: 2rem;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffdd99;
+            animation: swing 3s infinite alternate ease-in-out;
+        }
+        .temple-bell:nth-child(1) { top: 20px; left: 20px; }
+        .temple-bell:nth-child(2) { top: 20px; right: 20px; }
+        @keyframes swing {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
+
+        /* Custom Clip Path for Maa Durga's Eyes (SVG) */
+        #durga-silhouette {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            position: relative;
+            /* Maa Durga's eyes opening effect (applied via JS) */
+        }
+        #durga-eyes {
+            width: 100%;
+            height: 100%;
+            clip-path: inset(45% 0 45% 0); /* Closed eyes state */
+            background-color: #ffd700;
+            opacity: 0.9;
+            border-radius: 50%;
+        }
+
+        /* Line-by-Line Text Glow */
+        .poetic-line {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            text-shadow: 0 0 5px #ffdd99;
+        }
+
+        /* Blessing Message Overlay */
+        #blessing-message {
+            opacity: 0;
+            transition: opacity 1s ease-in-out, transform 0.5s;
+            transform: scale(0.9);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 50;
+            pointer-events: none;
+        }
+        .blessing-text {
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+</head>
+<body class="font-sans flex flex-col items-center p-4">
+    
+    <!-- Ambient Sound Placeholder -->
+    <!-- Ideally, soft aarti chime or sitar melody -->
+    <audio id="ambient-aarti" loop muted autoplay>
+        <!-- Replace with actual sound sources -->
+    </audio>
+
+    <!-- Temple Bells -->
+    <div class="temple-bell" style="animation-delay: 0.5s;">🔔</div>
+    <div class="temple-bell" style="animation-delay: 1.2s;">🔔</div>
+
+    <!-- Main Content Container -->
+    <main class="w-full max-w-2xl flex flex-col items-center text-center py-10 z-20">
+        
+        <!-- Header -->
+        <h1 id="page-header" class="text-3xl sm:text-5xl font-extrabold text-divine-gold mb-10 opacity-0 animate-fadeIn" style="animation-delay: 0.5s;">
+            🕉️ “Maa Durga’s Blessing for My Sona”
+        </h1>
+        
+        <!-- Maa Durga Visuals -->
+        <div id="durga-container" class="mb-12">
+            <div id="durga-silhouette" class="rounded-full bg-deep-maroon/50 shadow-2xl animate-glowPulse">
+                <!-- Golden Aura/Silhouette behind the eyes -->
+                <div id="durga-eyes"></div>
+            </div>
+            <!-- Optional outline/icon for the Durga Maa visual -->
+             <p class="mt-4 text-aura-light text-sm italic">Symbol of Divine Protection</p>
+        </div>
+
+        <!-- Poetic Prayer Text -->
+        <div id="prayer-text-container" class="text-xl sm:text-2xl font-serif font-light text-aura-light space-y-4 mb-16">
+            <!-- Content injected by JavaScript line-by-line -->
+        </div>
+
+        <!-- Floating Diyas -->
+        <div class="flex space-x-8 mb-16">
+            <div class="text-4xl animate-diyaFloat" style="color: #ffc107; text-shadow: 0 0 10px #ffdd99;">🪔</div>
+            <div class="text-4xl animate-diyaFloat" style="animation-delay: 1s; color: #ff9800; text-shadow: 0 0 10px #ffdd99;">🪔</div>
+            <div class="text-4xl animate-diyaFloat" style="animation-delay: 0.5s; color: #ffc107; text-shadow: 0 0 10px #ffdd99;">🪔</div>
+        </div>
+
+        <!-- Interactive Bell Button -->
+        <button id="bell-button" onclick="handleBlessing()" 
+                class="bg-divine-gold text-deep-maroon font-extrabold py-4 px-10 rounded-full shadow-2xl transform active:scale-95 transition-all duration-300 hover:bg-aura-light text-xl animate-pulseHeart" 
+                style="animation: glowPulse 2s infinite alternate;">
+            ✨ “Tap the Bell for Blessing 🔔”
+        </button>
+    </main>
+
+    <!-- Blessing Message Overlay -->
+    <div id="blessing-message" class="flex flex-col justify-center items-center">
+        <div class="p-8 sm:p-12 rounded-3xl text-center bg-deep-maroon/80 border border-divine-gold shadow-2xl">
+            <p class="text-4xl sm:text-6xl font-extrabold mb-4 text-divine-gold blessing-text">
+                🌸 “Blessing Sent to Your Heart, Sona 💖”
+            </p>
+            <p class="text-xl sm:text-2xl italic font-light text-aura-light">
+                — Maa aur Rishu dono tumhare saath hain hamesha 💫
+            </p>
+        </div>
+    </div>
+
+    <!-- Navigation Footer -->
+    <footer class="w-full max-w-xl flex justify-between items-center py-8 z-20">
+        <a href="page13.html" class="text-divine-gold/70 hover:text-divine-gold transition duration-300 transform hover:scale-105 font-semibold">
+            ⬅️ Back to Page 13
+        </a>
+        <a href="page15.html" class="text-divine-gold hover:text-aura-light transition duration-300 transform hover:scale-105 font-bold text-lg">
+            Next Page ➡️
+        </a>
+    </footer>
+
+    <script>
+        const prayerLines = [
+            "Maa, meri Sona hamesha muskurati rahe,",
+            "Har subah uske chehre pe ujala chaaye,",
+            "Uske sapne kabhi adhure na rahein,",
+            "Uska har din aapki kripa se saja rahe 💫",
+            "Aapka aashirwad uske kadmon ke saath rahe,",
+            "Uske har aansu se pehle khushi aaye,",
+            "Aur meri Ruhi har pal apni roshni se duniya jagmagaaye 🙏💖"
+        ];
+        
+        const prayerContainer = document.getElementById('prayer-text-container');
+        const bellButton = document.getElementById('bell-button');
+        const blessingMessage = document.getElementById('blessing-message');
+        const durgaEyes = document.getElementById('durga-eyes');
+
+        // Function to display text line-by-line
+        function displayPrayer() {
+            prayerLines.forEach((line, index) => {
+                const p = document.createElement('p');
+                p.textContent = line;
+                p.className = 'poetic-line';
+                prayerContainer.appendChild(p);
+
+                // Staggered fade-in effect
+                setTimeout(() => {
+                    p.style.opacity = '1';
+                }, 1000 + (index * 800));
+            });
+        }
+
+        // Function to handle the bell click interaction
+        function handleBlessing() {
+            if (bellButton.disabled) return;
+            bellButton.disabled = true;
+            
+            // 1. Bell Ringing (Visual/Sound Cue)
+            bellButton.textContent = '🔔🔔🔔';
+            bellButton.classList.remove('animate-glowPulse');
+            bellButton.classList.add('bg-aura-light', 'text-deep-maroon', 'scale-[1.03]');
+            
+            // 2. Durga Maa's eyes open slowly
+            durgaEyes.style.animation = 'eyeOpen 3s ease-out forwards';
+            
+            // 3. Gentle white glow spreads (simulated by overlay fade-in)
+            setTimeout(() => {
+                blessingMessage.style.opacity = '1';
+                blessingMessage.style.transform = 'scale(1)';
+            }, 1500);
+
+            // Hide the overlay after a pause to return focus to the page
+            setTimeout(() => {
+                blessingMessage.style.opacity = '0';
+                blessingMessage.style.transform = 'scale(0.9)';
+            }, 6000); // Display blessing for 4.5 seconds
+        }
+
+
+        window.onload = function() {
+            // Start eye-opening animation after header fade-in
+            setTimeout(() => {
+                // Ensure the eyes are ready to open
+                durgaEyes.style.clipPath = 'inset(45% 0 45% 0)'; 
+            }, 500);
+
+            // Start prayer text display
+            displayPrayer();
+
+            // Attempt to play ambient sound (muted due to browser restrictions)
+            document.getElementById('ambient-aarti').volume = 0.3;
+            document.getElementById('ambient-aarti').play().catch(e => console.log("Ambient audio blocked:", e));
+        };
+    </script>
+</body>
+</html>

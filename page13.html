@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAGE 13: Ruhi Quiz</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        'soft-pink': '#fcddec',
+                        'light-cream': '#fffbeb',
+                        'bubbly-pink': '#e91e63',
+                        'deep-pink': '#ad1457',
+                        'accent-gold': '#ffc107',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { opacity: '0', transform: 'translateX(20px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        slideOut: {
+                            '0%': { opacity: '1', transform: 'translateX(0)' },
+                            '100%': { opacity: '0', transform: 'translateX(-20px)' },
+                        },
+                        pulseHeart: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.1)' },
+                        },
+                        glitter: {
+                            '0%, 100%': { 'box-shadow': '0 0 10px #ffc107, 0 0 20px #e91e63' },
+                            '50%': { 'box-shadow': '0 0 30px #ffc107, 0 0 50px #e91e63' },
+                        }
+                    },
+                    animation: {
+                        slideIn: 'slideIn 0.5s ease-out forwards',
+                        slideOut: 'slideOut 0.5s ease-out forwards',
+                        pulseHeart: 'pulseHeart 1s infinite alternate',
+                        glitter: 'glitter 2s infinite ease-in-out',
+                    },
+                },
+            }
+        }
+    </script>
+    <style>
+        /* Custom background with floating hearts */
+        body {
+            background: linear-gradient(135deg, #fffbeb 0%, #fcddec 100%);
+            position: relative;
+            /* Removed 'overflow: hidden' to allow scrolling */
+        }
+        .heart-doodle {
+            position: absolute;
+            color: #ffb3c1;
+            opacity: 0.7;
+            font-size: clamp(1rem, 3vw, 3rem);
+            pointer-events: none;
+            animation: floatAndRotate linear infinite;
+        }
+
+        /* Generate multiple floating hearts */
+        @keyframes floatAndRotate {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+        }
+
+        .heart-doodle:nth-child(1) { left: 5%; animation: floatAndRotate 20s infinite 1s; }
+        .heart-doodle:nth-child(2) { left: 30%; animation: floatAndRotate 15s infinite 5s; }
+        .heart-doodle:nth-child(3) { left: 70%; animation: floatAndRotate 25s infinite 2s; }
+        .heart-doodle:nth-child(4) { left: 95%; animation: floatAndRotate 18s infinite 8s; }
+        .heart-doodle:nth-child(5) { left: 15%; animation: floatAndRotate 16s infinite 4s; }
+
+        /* Glassy Card Style */
+        .glassy-card {
+            background-color: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        /* Hidden at start, shown by JS logic */
+        .hidden-at-start {
+            display: none;
+            opacity: 0;
+        }
+        
+    </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col items-center justify-center p-4">
+    
+    <!-- Floating Heart Doodles -->
+    <div class="heart-doodle">💖</div>
+    <div class="heart-doodle">🌸</div>
+    <div class="heart-doodle">💞</div>
+    <div class="heart-doodle">😘</div>
+    <div class="heart-doodle">❤️</div>
+
+    <!-- Main Quiz Container -->
+    <div class="w-full max-w-xl z-10 text-center">
+
+        <!-- Title and Subtitle -->
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-deep-pink mb-2 transform animate-pulseHeart">
+            💞 “Ruhi Quiz: Kitna Jaanti Ho Apne Rishu Ko?”
+        </h1>
+        <p class="text-lg sm:text-xl font-medium text-bubbly-pink mb-10">
+            “Let’s see how well you know your Rishu 😜”
+        </p>
+
+        <!-- Quiz Card Section -->
+        <div id="quiz-card" class="glassy-card p-6 sm:p-10 rounded-3xl transition-transform duration-500 min-h-[300px] flex flex-col justify-between">
+            
+            <!-- Question Display Area -->
+            <div id="question-area">
+                <!-- Content injected by JavaScript -->
+            </div>
+
+            <!-- Loading/Scorecard Area (Initially Hidden) -->
+            <div id="result-area" class="hidden-at-start flex flex-col items-center justify-center">
+                
+                <!-- Loading Animation -->
+                <div id="loading" class="text-2xl font-semibold text-bubbly-pink flex items-center mb-6">
+                    <span class="mr-3">Calculating Love IQ...</span>
+                    <div class="w-6 h-6 border-4 border-bubbly-pink border-t-transparent border-solid rounded-full animate-spin"></div>
+                </div>
+
+                <!-- Scorecard -->
+                <div id="scorecard" class="hidden-at-start w-full p-8 rounded-2xl bg-deep-pink text-white shadow-2xl animate-glitter" style="transition: all 1s ease;">
+                    <p class="text-5xl font-extrabold mb-4 text-accent-gold">
+                        You Know Me 100%! 😘💞
+                    </p>
+                    <p class="text-xl italic font-light mb-8">
+                        Aap se zyada mujhe koi samajh hi nahi sakta Ruhi 💖
+                    </p>
+                    
+                    <!-- Next Page Button -->
+                    <a href="page14.html" class="inline-block bg-accent-gold text-deep-pink font-extrabold py-3 px-8 rounded-full shadow-lg transition transform hover:scale-105">
+                        Next Page 💫
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const quizQuestions = [
+            {
+                question: "Rishu ka sabse pyara naam aapke liye?",
+                options: ["Jaanu 💖", "Sona 🌸", "Ruhi 🌹", "Baby 😘"],
+                correct: "Sona 🌸" // Correct answers are hardcoded for the 100% score
+            },
+            {
+                question: "Rishu ka dream vacation spot?",
+                options: ["Kashmir ❄️", "Paris 💫", "Goa 🌊", "Maldives 🌅"],
+                correct: "Maldives 🌅" 
+            },
+            {
+                question: "Rishu ka favourite time with you?",
+                options: ["Late night talks 🌙", "Long calls 📞", "Coffee time ☕", "Watching stars together 🌌"],
+                correct: "Watching stars together 🌌" 
+            },
+            {
+                question: "Rishu aapko sabse zyada kya kehta hai?",
+                options: ["Sona", "Meri jaan", "Ruhi", "Cutie"],
+                correct: "Sona" 
+            },
+            {
+                question: "Rishu ka wish for the future?",
+                options: ["To buy a home together 🏡", "To travel with you ✈️", "To never let you cry 💞", "All of these 😍"],
+                correct: "All of these 😍"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questionArea = document.getElementById('question-area');
+        const quizCard = document.getElementById('quiz-card');
+        const resultArea = document.getElementById('result-area');
+        const loading = document.getElementById('loading');
+        const scorecard = document.getElementById('scorecard');
+
+        /**
+         * Renders the current question and its options.
+         */
+        function renderQuestion() {
+            const q = quizQuestions[currentQuestionIndex];
+            
+            questionArea.innerHTML = `
+                <p class="text-2xl sm:text-3xl font-bold text-deep-pink mb-6 animate-slideIn">
+                    ${currentQuestionIndex + 1}. ${q.question}
+                </p>
+                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    ${q.options.map(option => `
+                        <button onclick="handleAnswer('${option.replace(/'/g, "\\'")}')" 
+                                class="w-full py-3 px-4 bg-bubbly-pink text-white font-semibold rounded-xl shadow-md 
+                                       hover:bg-deep-pink transition transform hover:scale-[1.03] active:scale-95">
+                            ${option}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            // Re-apply slideIn animation class to the new question content
+            document.getElementById('question-area').children[0].style.animation = 'slideIn 0.5s ease-out forwards';
+        }
+
+        /**
+         * Handles user clicking an answer option.
+         * @param {string} selectedOption The text of the selected option.
+         */
+        function handleAnswer(selectedOption) {
+            // Check if correct (though we assume 100% for this loving quiz)
+            if (selectedOption === quizQuestions[currentQuestionIndex].correct) {
+                score++;
+            }
+
+            // Start slide-out animation
+            const currentQElement = document.getElementById('question-area').children[0];
+            const optionsContainer = document.getElementById('options-container');
+            
+            currentQElement.style.animation = 'slideOut 0.3s ease-in forwards';
+            optionsContainer.style.animation = 'slideOut 0.3s ease-in forwards';
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizQuestions.length) {
+                    renderQuestion();
+                } else {
+                    showScorecard();
+                }
+            }, 300); // Wait for slide-out animation to complete
+        }
+
+        /**
+         * Shows the final score and message.
+         */
+        function showScorecard() {
+            questionArea.innerHTML = '';
+            quizCard.classList.add('justify-center');
+            
+            // 1. Show loading screen
+            resultArea.classList.remove('hidden-at-start');
+            resultArea.style.opacity = '1';
+            
+            // 2. Simulate calculation time
+            setTimeout(() => {
+                loading.style.display = 'none';
+                
+                // 3. Show final scorecard
+                scorecard.classList.remove('hidden-at-start');
+                scorecard.style.opacity = '1';
+
+            }, 2000); // 2 second loading delay
+        }
+
+        // Initialize the quiz on load
+        window.onload = renderQuestion;
+    </script>
+</body>
+</html>

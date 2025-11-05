@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Birthday Finale - Rishu & Ruhi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS for the Grand Finale Theme and Animations */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #00001a; /* Dark night sky */
+            cursor: crosshair; /* Custom cursor to suggest interactivity */
+        }
+
+        /* Fixed background canvas for performance */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        /* --- Text Styling and Animations --- */
+        #main-title {
+            font-size: 3rem;
+            text-shadow: 0 0 10px #FFD700, 0 0 30px #FFC0CB, 0 0 50px rgba(255, 215, 0, 0.7);
+            color: #FFD700;
+            font-weight: 900;
+            opacity: 0;
+            animation: bounceIn 1.5s ease-out forwards;
+            animation-delay: 1s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5) translateY(-50px); opacity: 0; }
+            70% { transform: scale(1.1) translateY(10px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .text-pulse {
+            animation: text-glow 2s infinite alternate;
+        }
+
+        @keyframes text-glow {
+            0% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFC0CB; }
+            100% { text-shadow: 0 0 15px #FF80AB, 0 0 40px #FFD700; }
+        }
+
+        #subtitle-text {
+            color: #FFC0CB;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+            animation-delay: 3s;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* --- Navigation Bar (Glass Style) --- */
+        #nav-bar {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px #FFD700;
+        }
+        .nav-button:hover {
+            color: #FF80AB;
+            transform: scale(1.05);
+            text-shadow: 0 0 10px #FF80AB;
+        }
+
+        /* --- Video Frame (Glass Style) --- */
+        #video-frame {
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            #main-title {
+                font-size: 2rem;
+            }
+            #subtitle-text {
+                font-size: 0.875rem;
+            }
+            #video-frame {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- NAVIGATION BAR (Glass Style) -->
+    <nav id="nav-bar" class="fixed top-0 left-0 right-0 p-4 z-50 rounded-b-xl">
+        <div class="max-w-7xl mx-auto flex justify-between items-center text-white">
+            <a href="page16.html" class="nav-button flex items-center text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mr-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Back to Proposal
+            </a>
+            <button onclick="resetFinale()" class="nav-button flex items-center text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mr-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.75M4.031 9.865a8.25 8.25 0 0113.803-3.75l3.181 3.182m0-4.991v4.99" />
+                </svg>
+                Replay Finale
+            </button>
+        </div>
+    </nav>
+
+    <!-- BACKGROUND CANVAS (FIREWORKS, CONFETTI, BALLOONS) -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- MOUSE TRAIL CANVAS -->
+    <canvas id="mouse-canvas" class="fixed top-0 left-0 w-full h-full z-40 pointer-events-none"></canvas>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="relative w-full min-h-screen flex flex-col items-center justify-center pt-24 pb-16 z-30">
+        <!-- Main Animated Birthday Text -->
+        <div class="text-center mb-10 text-pulse" id="text-container">
+            <h1 id="main-title" class="text-4xl sm:text-5xl lg:text-7xl mb-4 text-pulse">
+                HAPPY BIRTHDAY MY SONA 💖
+            </h1>
+            <p id="subtitle-text" class="text-lg sm:text-xl lg:text-2xl font-medium leading-relaxed">
+                From your Rishu,
+                <br>who will keep loving you — page after page, life after life 💞
+            </p>
+        </div>
+
+        <!-- Personalized Video Player -->
+        <div id="video-frame" class="w-11/12 md:w-3/4 lg:w-1/2 p-6 rounded-3xl text-center">
+            <h2 class="text-2xl font-semibold text-white mb-4">A Special Message Just for You</h2>
+            <!-- Video Placeholder: Replace "video.mp4" with the actual video URL if hosting it -->
+            <video id="personal-video" controls class="w-full rounded-xl shadow-2xl" poster="https://placehold.co/1280x720/1f1f33/FFD700?text=Birthday+Video+Loading...">
+                <!-- Fallback content if the video cannot be loaded -->
+                <source src="video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <button id="play-button" onclick="playVideo()" class="mt-6 px-8 py-3 rounded-full text-lg font-bold transition-all duration-300" style="background: linear-gradient(45deg, #FFD700, #FFC0CB); color: #1a0808; box-shadow: 0 0 10px #FFD700;">
+                Play Video 🎬
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Global variables (Required for platform context)
+        const __app_id = typeof window.__app_id !== 'undefined' ? window.__app_id : 'birthday-finale-app';
+        const __firebase_config = typeof window.__firebase_config !== 'undefined' ? window.__firebase_config : '{}';
+
+        // --- Core Animation and Interaction Logic (Canvas) ---
+        const bgCanvas = document.getElementById('bg-canvas');
+        const mouseCanvas = document.getElementById('mouse-canvas');
+        const ctx = bgCanvas.getContext('2d');
+        const mCtx = mouseCanvas.getContext('2d');
+
+        let fireworks = [];
+        let confetti = [];
+        let balloons = [];
+        let sparkles = [];
+        let stars = []; // For the subtle background sparkle
+
+        const COLORS = ['#FFD700', '#FF80AB', '#FFC0CB', '#FFFFFF', '#00FFFF'];
+        const starCount = 100;
+
+        function resizeCanvas() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+            mouseCanvas.width = window.innerWidth;
+            mouseCanvas.height = window.innerHeight;
+        }
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * bgCanvas.width;
+                this.y = Math.random() * bgCanvas.height;
+                this.radius = Math.random() * 1.5;
+                this.alpha = Math.random();
+                this.velocity = Math.random() * 0.005;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                ctx.fill();
+            }
+            update() {
+                this.alpha += this.velocity;
+                if (this.alpha <= 0.2 || this.alpha >= 1) {
+                    this.velocity = -this.velocity;
+                }
+                this.draw();
+            }
+        }
+
+        // Particle class for Fireworks, Confetti, and Sparkles
+        class Particle {
+            constructor(x, y, color, size, type, vx = null, vy = null) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = size;
+                this.type = type;
+                this.life = 1;
+                this.gravity = 0.05;
+
+                if (type === 'firework') {
+                    this.vx = vx || (Math.random() - 0.5) * 4;
+                    this.vy = vy || (Math.random() - 0.5) * 4;
+                    this.friction = 0.95;
+                } else if (type === 'confetti') {
+                    this.vx = vx || (Math.random() - 0.5) * 0.5;
+                    this.vy = vy || (Math.random() * 0.5) + 0.5;
+                } else if (type === 'sparkle') {
+                    this.vx = vx || (Math.random() - 0.5) * 0.5;
+                    this.vy = vy || (Math.random() - 0.5) * 0.5;
+                    this.friction = 0.9;
+                }
+            }
+
+            update(ctx) {
+                if (this.type === 'firework') {
+                    this.vy += this.gravity;
+                    this.vx *= this.friction;
+                    this.vy *= this.friction;
+                    this.life -= 0.01;
+                } else if (this.type === 'confetti') {
+                    this.y += this.vy;
+                    this.x += this.vx * Math.sin(this.y * 0.01);
+                    if (this.y > bgCanvas.height) this.life = 0;
+                } else if (this.type === 'sparkle') {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.life -= 0.03;
+                }
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                this.draw(ctx);
+            }
+
+            draw(ctx) {
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = this.color;
+
+                if (this.type === 'confetti') {
+                    ctx.fillRect(this.x, this.y, this.size, this.size);
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // --- Fireworks Logic ---
+        function createFirework(x, y, color) {
+            const count = 100;
+            for (let i = 0; i < count; i++) {
+                fireworks.push(new Particle(x, y, color, Math.random() * 3, 'firework'));
+            }
+        }
+
+        function launchFirework() {
+            const x = Math.random() * bgCanvas.width * 0.8 + bgCanvas.width * 0.1;
+            const y = Math.random() * bgCanvas.height * 0.4 + bgCanvas.height * 0.1;
+            const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            createFirework(x, y, color);
+        }
+
+        // --- Confetti and Balloon Logic ---
+        function createConfetti() {
+            const x = Math.random() * bgCanvas.width;
+            const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            confetti.push(new Particle(x, 0, color, Math.random() * 5 + 2, 'confetti'));
+        }
+
+        function createBalloon() {
+            const x = Math.random() * bgCanvas.width;
+            const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            // Balloons are just larger, slow-moving particles for this effect
+            balloons.push(new Particle(x, bgCanvas.height, color, 15, 'balloon', (Math.random() - 0.5) * 0.3, -Math.random() * 1.5 - 0.5));
+        }
+
+        // --- Mouse Trail Logic ---
+        function createSparkle(x, y) {
+            const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            sparkles.push(new Particle(x, y, color, Math.random() * 2 + 1, 'sparkle'));
+        }
+
+        let mouseX = 0, mouseY = 0;
+        mouseCanvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            createSparkle(mouseX, mouseY);
+        });
+        mouseCanvas.addEventListener('click', (e) => {
+            // Click anywhere -> extra burst of fireworks
+            launchFirework();
+        });
+
+        // --- Animation Loop ---
+        let lastFireworkTime = 0;
+        let fireworkInterval = 1500; // Launch a firework every 1.5 seconds
+
+        let lastConfettiTime = 0;
+        let confettiInterval = 100;
+
+        let lastBalloonTime = 0;
+        let balloonInterval = 3000;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 1. Update Background Canvas (Fireworks, Confetti, Balloons)
+            ctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            ctx.fillStyle = 'rgba(0, 0, 26, 0.2)'; // Subtle trail for the effects
+            ctx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            const now = Date.now();
+
+            // Continuous Fireworks
+            if (now - lastFireworkTime > fireworkInterval) {
+                launchFirework();
+                lastFireworkTime = now;
+            }
+
+            // Continuous Confetti
+            if (now - lastConfettiTime > confettiInterval) {
+                createConfetti();
+                lastConfettiTime = now;
+            }
+
+            // Floating Balloons
+            if (now - lastBalloonTime > balloonInterval) {
+                createBalloon();
+                lastBalloonTime = now;
+            }
+
+            // Update & Draw Stars (Subtle background)
+            stars.forEach(star => star.update());
+
+            // Update & Draw Fireworks
+            fireworks.forEach(p => p.update(ctx));
+            fireworks = fireworks.filter(p => p.life > 0);
+
+            // Update & Draw Confetti/Balloons
+            confetti.forEach(p => p.update(ctx));
+            confetti = confetti.filter(p => p.life > 0);
+
+            balloons.forEach(p => p.update(ctx));
+            balloons = balloons.filter(p => p.life > 0 && p.y > -20); // disappears when leaving top screen
+
+
+            // 2. Update Mouse Canvas (Sparkles)
+            mCtx.clearRect(0, 0, mouseCanvas.width, mouseCanvas.height);
+            // Apply a fade effect to the mouse trail canvas
+            mCtx.fillStyle = 'rgba(0, 0, 26, 0.5)';
+            mCtx.fillRect(0, 0, mouseCanvas.width, mouseCanvas.height);
+
+            // Update & Draw Sparkles
+            sparkles.forEach(p => p.update(mCtx));
+            sparkles = sparkles.filter(p => p.life > 0);
+        }
+
+        // --- Video and Control Functions ---
+        const videoElement = document.getElementById('personal-video');
+        const playButton = document.getElementById('play-button');
+        const mainTitle = document.getElementById('main-title');
+
+        function playVideo() {
+            videoElement.play().catch(error => {
+                console.error("Autoplay failed or video source is missing.", error);
+                // Simple message box (instead of alert)
+                const container = document.getElementById('video-frame');
+                const message = document.createElement('p');
+                message.textContent = "Could not start video. Please check the video source (video.mp4). You can try clicking the play button on the video player directly.";
+                message.style.color = 'red';
+                message.style.marginTop = '10px';
+                container.appendChild(message);
+            });
+            playButton.style.display = 'none';
+        }
+
+        function resetFinale() {
+            // Reset animations and text
+            fireworks = [];
+            confetti = [];
+            balloons = [];
+            sparkles = [];
+            mainTitle.style.animation = 'none';
+            mainTitle.offsetHeight; /* trigger reflow */
+            mainTitle.style.animation = null;
+            mainTitle.style.opacity = 0;
+            mainTitle.style.animation = 'bounceIn 1.5s ease-out forwards';
+            mainTitle.style.animationDelay = '0s';
+
+            // Reset video
+            videoElement.pause();
+            videoElement.currentTime = 0;
+            playButton.style.display = 'block';
+
+            // Optional: restart intervals or set a flag if needed, but the continuous loop handles it
+            lastFireworkTime = 0;
+            lastConfettiTime = 0;
+            lastBalloonTime = 0;
+        }
+
+        // --- Initialization ---
+        window.onload = function() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Initialize subtle background stars
+            for (let i = 0; i < starCount; i++) {
+                stars.push(new Star());
+            }
+
+            animate();
+        };
+    </script>
+</body>
+</html>

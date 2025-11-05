@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAGE 12: Gift Unwrap Game</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'cozy-gold': '#ffcc80',
+                        'cozy-pink': '#e91e63',
+                        'bg-dark': '#2a0e1c',
+                    },
+                    keyframes: {
+                        jiggle: {
+                            '0%, 100%': { transform: 'rotate(0deg)' },
+                            '25%': { transform: 'rotate(-5deg)' },
+                            '75%': { transform: 'rotate(5deg)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    },
+                    animation: {
+                        jiggle: 'jiggle 0.15s ease-in-out',
+                        fadeIn: 'fadeIn 1.5s ease-out forwards',
+                    },
+                },
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* Main Background Gradient (Soft Gold + Pink) */
+        #game-background {
+            background: radial-gradient(circle at center, #301934 0%, #2a0e1c 100%);
+        }
+
+        /* Initial Gift Box Style */
+        #gift-box {
+            font-size: 10rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            text-shadow: 0 0 15px rgba(255, 204, 128, 0.7);
+        }
+
+        /* Glass Style for Love Letter Box */
+        .glass-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Confetti Burst Effect */
+        #confetti {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            overflow: visible;
+            pointer-events: none;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+            animation: confetti-fall 2s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; }
+        }
+    </style>
+</head>
+<body id="game-background" class="font-inter min-h-screen flex flex-col items-center justify-center text-white relative p-4 overflow-hidden">
+    
+    <!-- Confetti Layer -->
+    <div id="confetti" class="z-40"></div>
+
+    <!-- Main Game Container -->
+    <div id="game-container" class="w-full max-w-lg flex flex-col items-center justify-center text-center z-20">
+        
+        <!-- Top Instruction Text -->
+        <p id="instruction-text" class="text-xl sm:text-3xl font-light mb-12 text-cozy-gold/90 transition-opacity duration-500">
+            Your surprise is waiting, Sona 🎁 Tap or shake to unwrap!
+        </p>
+
+        <!-- The Gift Box -->
+        <div id="gift-box" onclick="handleUnwrap()" class="select-none mb-12 transform active:scale-105">
+            🎁
+        </div>
+
+        <!-- Click Counter Display (Optional/Debug) -->
+        <div id="click-display" class="text-sm text-cozy-gold/50">
+            Taps: 0 / 4
+        </div>
+        
+    </div>
+
+    <!-- Final Gift/Letter Overlay (Initially Hidden) -->
+    <div id="letter-overlay" class="absolute inset-0 flex flex-col justify-center items-center z-30 bg-bg-dark/80 opacity-0 pointer-events-none transition-opacity duration-1000">
+        
+        <!-- Confirmation Message -->
+        <p id="confirmation-message" class="text-3xl sm:text-5xl font-extrabold mb-8 text-cozy-gold drop-shadow-lg opacity-0" style="animation-delay: 0.5s;">
+            Your Gift is Ready 💌
+        </p>
+
+        <!-- Scrollable Love Letter Box (Glass Style) -->
+        <div id="love-letter-box" class="glass-box p-6 sm:p-10 w-11/12 max-w-md h-96 rounded-3xl overflow-y-auto text-left opacity-0 shadow-2xl" style="animation-delay: 1s;">
+            <h2 class="text-3xl font-bold mb-4 text-cozy-pink">To My Dearest Sona,</h2>
+            <p class="text-cozy-gold/90 leading-relaxed text-lg">
+                This isn't just a letter; it's a hug made of words, a small space where I can tell you how incredibly much you mean to me. You are the warmth on a cold day, the quiet strength I lean on, and the reason my world is painted in brighter colors.
+                <br><br>
+                Every moment with you is a gift I unwrap again and again. Thank you for your kindness, your laughter, and the way you make even the ordinary feel magical.
+                <br><br>
+                I hope this little journey brought a smile to your face. Know that you are cherished, today and always.
+                <br><br>
+                With all my love and endless admiration,
+                <br>
+                Your Comfort (P2) 💖
+            </p>
+            <div class="h-10"></div> <!-- Padding for scroll bottom -->
+        </div>
+
+        <!-- Next Page Button -->
+        <a href="page13.html" id="next-page-link" 
+           class="mt-8 inline-block bg-cozy-pink text-white font-extrabold py-3 px-8 rounded-full shadow-xl hover:bg-cozy-pink/80 transition duration-300 transform hover:scale-[1.05] opacity-0 text-lg" style="animation-delay: 1.5s;">
+            What's Next? ➡️
+        </a>
+    </div>
+
+
+    <script>
+        const giftBox = document.getElementById('gift-box');
+        const instructionText = document.getElementById('instruction-text');
+        const clickDisplay = document.getElementById('click-display');
+        const confettiContainer = document.getElementById('confetti');
+        const letterOverlay = document.getElementById('letter-overlay');
+        const confirmationMessage = document.getElementById('confirmation-message');
+        const loveLetterBox = document.getElementById('love-letter-box');
+        const nextPageLink = document.getElementById('next-page-link');
+        
+        let clickCount = 0;
+        const MAX_CLICKS = 4;
+
+        /**
+         * Creates a short burst of randomized confetti.
+         */
+        function burstConfetti() {
+            const colors = ['#f44336', '#ffeb3b', '#e91e63', '#9c27b0', '#ff9800'];
+            for (let i = 0; i < 30; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Randomize trajectory and rotation
+                const x = (Math.random() * 400 - 200) + 'px';
+                const y = (Math.random() * 400 - 400) + 'px';
+                const r = (Math.random() * 360) + 'deg';
+                
+                piece.style.setProperty('--x', x);
+                piece.style.setProperty('--y', y);
+                piece.style.setProperty('--r', r);
+                piece.style.animationDelay = (Math.random() * 0.5) + 's'; 
+
+                confettiContainer.appendChild(piece);
+
+                // Clean up the element after the animation
+                piece.addEventListener('animationend', () => piece.remove());
+            }
+        }
+
+        /**
+         * Handles the gift unwrapping interaction.
+         */
+        function handleUnwrap() {
+            if (clickCount >= MAX_CLICKS) return;
+
+            clickCount++;
+            clickDisplay.textContent = `Taps: ${clickCount} / ${MAX_CLICKS}`;
+            
+            // 1. Jiggle animation
+            giftBox.classList.add('animate-jiggle');
+            giftBox.addEventListener('animationend', () => {
+                giftBox.classList.remove('animate-jiggle');
+            }, { once: true });
+
+            // 2. Increase glow/brightness on each click
+            const glowIntensity = 15 + (clickCount * 10); // 25, 35, 45, 55
+            giftBox.style.textShadow = `0 0 ${glowIntensity}px rgba(255, 204, 128, 0.9)`;
+
+
+            if (clickCount >= MAX_CLICKS) {
+                // Game complete: Transition to the letter
+                instructionText.classList.add('opacity-0');
+                giftBox.classList.add('opacity-0');
+                clickDisplay.classList.add('opacity-0');
+                
+                burstConfetti();
+
+                // Wait for animations to finish before showing the letter
+                setTimeout(() => {
+                    // Hide the main game elements entirely
+                    document.getElementById('game-container').classList.add('hidden');
+                    
+                    // Show the letter overlay
+                    letterOverlay.style.opacity = '1';
+                    letterOverlay.style.pointerEvents = 'auto';
+
+                    // Apply fade-in animation to letter components
+                    confirmationMessage.classList.add('animate-fadeIn');
+                    loveLetterBox.classList.add('animate-fadeIn');
+                    nextPageLink.classList.add('animate-fadeIn');
+                    nextPageLink.style.opacity = '1';
+
+                }, 500); // Small delay to sync with confetti and fading
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕰️ Memory Lane – Your Story</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            /* Dreamy Background for Memory Lane (Similar to Page 3) */
+            background: linear-gradient(150deg, #d8b4fe 0%, #a78bfa 50%, #bae6fd 100%);
+            color: #333;
+            overflow-x: hidden; /* Prevent horizontal scrolling. Vertical scrolling is automatic. */
+        }
+
+        .navbar {
+            backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-link {
+            transition: all 0.3s;
+            padding: 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 15px rgba(255, 100, 150, 0.4);
+        }
+        
+        /* Dedicated Header for the title (The simple color rectangle) */
+        .page-header {
+            width: 100%;
+            /* Margin to push it down past the fixed navbar */
+            margin-top: 5rem; 
+            padding: 1.5rem 0;
+            /* Simple light, glassy color rectangle to match the dreamy theme */
+            background-color: rgba(255, 255, 255, 0.7); 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #333; /* Dark text for contrast */
+        }
+
+        .content-container {
+            flex-grow: 1;
+            /* Reduced padding-top as the header now provides space */
+            padding-top: 1rem; 
+            padding-bottom: 8rem; /* Space for the fixed footer/button */
+        }
+
+        /* Custom timeline styles */
+        .timeline {
+            position: relative;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background: #fbcfe8; /* Light pink line */
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            z-index: 10;
+        }
+
+        .memory-point {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+            z-index: 20;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .memory-point:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(236, 72, 153, 0.5);
+        }
+
+        .memory-point::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: #f0fdf4; /* Very light pink/white */
+            border: 4px solid #f472b6; /* Pink ring */
+            top: 25px;
+            border-radius: 50%;
+            z-index: 30;
+        }
+
+        .left {
+            left: 0;
+            text-align: right;
+            padding-right: 50px;
+        }
+
+        .right {
+            left: 50%;
+            padding-left: 50px;
+            text-align: left;
+        }
+
+        .right::after {
+            left: -10px;
+        }
+
+        .memory-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            opacity: 0.95;
+        }
+        
+        /* Media Query for Mobile: single column timeline */
+        @media screen and (max-width: 600px) {
+            .timeline::after {
+                left: 31px;
+            }
+            .memory-point {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            .memory-point::before {
+                left: 60px;
+                border: medium solid white;
+                border-width: 10px 10px 10px 0;
+                border-color: transparent white transparent transparent;
+            }
+            .left::after, .right::after {
+                left: 21px;
+            }
+            .right {
+                left: 0%;
+            }
+            .left {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar (Minimal Glass Style) -->
+    <nav class="navbar fixed top-0 left-0 right-0 p-4 z-50 rounded-b-xl shadow-lg">
+        <div class="flex justify-end space-x-4 text-gray-800">
+            <!-- 💖 Back → Page 3 (page3.html) -->
+            <a href="page3.html" class="nav-link text-pink-600">
+                <span class="mr-1">💖</span> Back to Letter
+            </a>
+            <!-- 💫 Next → Page 5 (page5.html) -->
+            <a href="page5.html" class="nav-link text-purple-600">
+                <span class="mr-1">💫</span> Next Page
+            </a>
+            <!-- 🕊️ About → # (optional static info) -->
+            <a href="#" class="nav-link text-blue-600">
+                <span class="mr-1">🕊️</span> About
+            </a>
+            <!-- 🕰️ Memory Replay → reload page -->
+            <a href="#" onclick="window.location.reload();" class="nav-link text-gray-600">
+                <span class="mr-1">🕰️</span> Replay Memories
+            </a>
+        </div>
+    </nav>
+    
+    <!-- New Header Section (The colored rectangle with the title) -->
+    <header class="page-header">
+        <h1 class="text-5xl font-extrabold text-pink-600 mb-2 drop-shadow-md">
+            Our Memory Lane 🌌
+        </h1>
+        <p class="text-xl text-purple-700 max-w-2xl drop-shadow-sm italic mx-auto px-4">
+            Dive into our cherished moments, Ruhi. Kisi bhi moment pe click karke uska message padh sakte hai!
+        </p>
+    </header>
+
+    <!-- Main Content: Memory Timeline -->
+    <main class="content-container flex flex-col items-center justify-start p-4">
+        
+        <!-- Timeline Container -->
+        <div id="timeline-container" class="timeline w-full max-w-4xl px-4 py-8">
+            <!-- Timeline points will be injected here by JavaScript -->
+            <div class="text-center py-10 text-xl font-semibold text-pink-700">
+                The Beginning of Us... 
+            </div>
+        </div>
+        <!-- End Timeline Container -->
+
+    </main>
+
+    <!-- Modal for Memory Pop-up -->
+    <div id="memory-modal" class="fixed inset-0 bg-black bg-opacity-70 z-[100] hidden items-center justify-center p-4" onclick="closeModal()">
+        <div class="bg-white/90 backdrop-blur-md rounded-xl p-8 max-w-lg w-full shadow-2xl relative animate-in zoom-in duration-500" onclick="event.stopPropagation()">
+            <h2 id="modal-title" class="text-3xl font-bold text-pink-600 mb-4"></h2>
+            <p id="modal-date" class="text-sm text-gray-500 mb-4 italic"></p>
+            <p id="modal-content" class="text-gray-700 leading-relaxed mb-6"></p>
+            <button onclick="closeModal()" class="w-full py-3 bg-pink-500 text-white font-semibold rounded-lg hover:bg-pink-600 transition-colors">
+                Close and Continue Exploring 💖
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer / Continue Button -->
+    <footer class="fixed bottom-0 w-full p-4 bg-white/80 backdrop-blur-sm z-50 shadow-inner rounded-t-xl">
+        <div class="flex flex-col items-center justify-center">
+            
+            <!-- Glowing Button: Continue to Love Notes -->
+            <a href="page5.html" class="inline-flex items-center justify-center px-10 py-4 text-xl font-bold rounded-full text-white bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 transition-all duration-300 shadow-xl shadow-pink-500/50 transform hover:scale-105 mb-3">
+                Continue to Love Notes 💌
+            </a>
+
+            <!-- Optional small Back link -->
+            <a href="page3.html" class="text-sm text-gray-600 hover:text-pink-600 transition-colors duration-300">
+                <span class="mr-1">💖</span> Back to Last Memory (The Letter)
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Array of cherished memories
+        const memories = [
+            {
+                date: "13 November 2022",
+                title: "The First Time I see You ✨",
+                content: "Wo unexplainable moment, jab physics ke class me hum aapko dekhe. Ha first time yahi dikha ki aap bahut sundar hai par jyada time dimag me yahi aaya ki aap alag hai. Wo movies me hota hai na ki jaise time ruk sa jata hai. Sab kucch slow motion me ho jata hai. Aisa laga ki wahan ka sara class sara bacha gayab, out of focus sab blur ho gaya, aur bas aap dikh rahe hai humko, ek dum chamakte hue. Us din se bas mera dil mera dimag aapke rup se bas imagination me chal gaya. Rupali ka Rup, he he 🥰"
+            },
+            {
+                date: "28 Sep 2022",
+                title: "Our First Coffee Date ☕",
+                content: "I remember being so nervous, but the moment you smiled, all the anxiety melted away. We talked for hours, and I realized then that I could talk to you about absolutely anything. You’re my safe space, Sona."
+            },
+            {
+                date: "01 Jan 2023",
+                title: "New Year, New Us 🎉",
+                content: "We welcomed the new year together under the stars. That night, I made a silent promise to protect your happiness and love you fiercely every single day. Har saal tumhare saath hi jeena hai."
+            },
+            {
+                date: "14 Mar 2024",
+                title: "The Rainy Day Trip 🚗",
+                content: "That crazy, unplanned road trip when the car broke down and it poured rain. Instead of getting mad, we just laughed and shared a packet of biscuits. That's when I knew our bond was unbreakable, through good times and chaos."
+            },
+            {
+                date: "20 Nov 2024",
+                title: "The Quiet Evening Promise 💍",
+                content: "Sitting on the terrace, watching the city lights. I didn't need big words. Just holding your hand, I promised you forever, and that promise echoes in my heart today. I love you, now and always."
+            },
+            {
+                date: "Today",
+                title: "Healing Heart, New Beginning ❤️",
+                content: "Every memory we have is precious. Thank you for walking this far with me, for your patience, and for giving me this chance. We move forward from here, stronger and happier than ever. Chalo, let's continue to the next chapter!"
+            }
+        ];
+
+        const timelineContainer = document.getElementById('timeline-container');
+        const modal = document.getElementById('memory-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDate = document.getElementById('modal-date');
+        const modalContent = document.getElementById('modal-content');
+
+        // Function to create and render the timeline
+        function renderTimeline() {
+            memories.forEach((memory, index) => {
+                const isRight = index % 2 !== 0; // Alternate between left and right
+                const alignmentClass = isRight ? 'right' : 'left';
+
+                const memoryPoint = document.createElement('div');
+                memoryPoint.className = `memory-point ${alignmentClass} mb-12`;
+                memoryPoint.setAttribute('data-index', index);
+                memoryPoint.onclick = () => openModal(index);
+
+                memoryPoint.innerHTML = `
+                    <div class="memory-card">
+                        <h3 class="text-xl font-bold text-pink-500">${memory.title}</h3>
+                        <p class="text-sm text-gray-500 mt-1">${memory.date}</p>
+                    </div>
+                `;
+
+                timelineContainer.appendChild(memoryPoint);
+            });
+            // Add a final 'end of line' text below the last memory point
+            const endText = document.createElement('div');
+            endText.className = "text-center py-6 text-2xl font-extrabold text-pink-700/80 drop-shadow-md";
+            endText.textContent = "And the Story Continues... ♾️";
+            timelineContainer.appendChild(endText);
+        }
+
+        // Function to open the modal
+        function openModal(index) {
+            const memory = memories[index];
+            modalTitle.textContent = memory.title;
+            modalDate.textContent = memory.date;
+            modalContent.innerHTML = memory.content; // Use innerHTML to allow for basic formatting if needed
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Initialize the timeline when the page loads
+        window.onload = renderTimeline;
+    </script>
+</body>
+</html>

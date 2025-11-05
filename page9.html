@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧩 Puzzle of Love – You Complete Me, Sona</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Tone.js for optional sound effects -->
+    <script src="https://cdn.jsdelivr.net/npm/tone@14.7.71/build/Tone.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* ------------------------------------------------ */
+        /* BASE STYLES & HEART ANIMATIONS */
+        /* ------------------------------------------------ */
+
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Soft glowing pink + lilac gradient */
+            background: radial-gradient(circle at center, #3c0044 0%, #1a0121 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            color: #d1d5db;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Navbar & Footer Glass Styles */
+        .glass-nav {
+            backdrop-filter: blur(4px);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-footer {
+            backdrop-filter: blur(4px);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Background floating hearts */
+        @keyframes floatHeart {
+            0%, 100% { transform: translateY(0) rotate(5deg); opacity: 0.8; }
+            50% { transform: translateY(-20px) rotate(-5deg); opacity: 0.5; }
+        }
+        
+        .floating-heart {
+            position: absolute;
+            color: rgba(236, 72, 153, 0.2); /* Pink with low opacity */
+            font-size: 3rem;
+            animation: floatHeart 10s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 2;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Puzzle Styles --- */
+        #puzzle-area {
+            position: relative;
+            width: 90vmin; /* Responsive size */
+            height: 60vmin; 
+            max-width: 800px;
+            max-height: 500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns for a better heart shape */
+            grid-template-rows: repeat(3, 1fr); /* 3 rows */
+            gap: 2px; /* Small gap between pieces */
+            perspective: 1000px;
+            z-index: 10;
+        }
+
+        .drop-target {
+            width: 100%;
+            height: 100%;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .drop-target.drag-over {
+            background-color: rgba(252, 165, 165, 0.2);
+            border-color: #facc15;
+            box-shadow: 0 0 15px rgba(252, 165, 165, 0.5);
+        }
+        
+        .puzzle-piece {
+            position: absolute; /* Allows dragging and free placement */
+            width: calc(90vmin / 4 - 2px); /* Calculate piece size based on container grid */
+            height: calc(60vmin / 3 - 2px);
+            max-width: calc(800px / 4 - 2px);
+            max-height: calc(500px / 3 - 2px);
+            cursor: grab;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: #ec4899; /* Deep Pink */
+            box-shadow: 0 0 10px rgba(252, 165, 165, 0.5);
+            transition: box-shadow 0.2s, transform 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            z-index: 100;
+        }
+
+        .puzzle-piece:hover {
+            box-shadow: 0 0 20px #facc15;
+            transform: scale(1.05) rotate(1deg);
+        }
+
+        .puzzle-piece.placed {
+            position: relative !important; /* Forces it back into the grid layout */
+            transform: none !important;
+            box-shadow: 0 0 10px #facc15;
+            border-color: #facc15;
+            background-color: #f472b6; /* Lighter Pink when placed */
+            cursor: default;
+            z-index: 10;
+            animation: pulse-glow 1s infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 10px #facc15, 0 0 20px #f472b6; }
+            100% { box-shadow: 0 0 15px #facc15, 0 0 30px #ec4899; }
+        }
+
+        /* Final Heart Reveal */
+        #final-message {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: 200;
+            pointer-events: none;
+            text-shadow: 0 0 10px #f472b6;
+        }
+
+        .heart-icon {
+            font-size: 8rem;
+            color: #f472b6;
+            animation: final-pulse 1.5s infinite alternate;
+        }
+
+        @keyframes final-pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+        
+        /* New Animation for Next Button Pop */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .pop-and-glow {
+            animation: popIn 0.5s ease-out forwards;
+            box-shadow: 0 0 10px #facc15;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Floating Hearts -->
+    <div class="floating-heart" style="top: 10%; left: 5%; animation-delay: 0s;">💖</div>
+    <div class="floating-heart" style="top: 50%; right: 10%; animation-delay: 3s; font-size: 5rem;">✨</div>
+    <div class="floating-heart" style="bottom: 20%; left: 30%; animation-delay: 6s; font-size: 4rem;">💞</div>
+    <div class="floating-heart" style="top: 30%; left: 70%; animation-delay: 9s;">💖</div>
+    <div class="floating-heart" style="bottom: 5%; right: 50%; animation-delay: 12s; font-size: 6rem;">✨</div>
+
+    <!-- Navbar -->
+    <nav class="glass-nav fixed top-0 left-0 right-0 p-4 z-50 rounded-b-xl shadow-lg">
+        <div class="flex justify-start space-x-4 text-gray-200">
+            <!-- 💖 Back → Page 8 (page8.html) -->
+            <a href="page8.html" class="nav-link text-pink-400 hover:bg-pink-900/20 p-2 rounded-full transition-colors font-semibold">
+                <span class="mr-1">💖</span> Back to Candles
+            </a>
+            <!-- 💫 Next → Page 10 (optional ending screen) -->
+            <!-- Initially hidden with opacity-0 and pointer-events-none. Activated on completion. -->
+            <a id="next-page-btn" href="page10.html" class="nav-link text-yellow-400 hover:bg-yellow-900/20 p-2 rounded-full transition-colors font-semibold opacity-0 pointer-events-none">
+                <span class="mr-1">💫</span> Final Journey
+            </a>
+            <!-- ❤️ Retry Puzzle → reload page -->
+            <a href="#" onclick="window.location.reload();" class="nav-link text-red-400 hover:bg-red-900/20 p-2 rounded-full transition-colors font-semibold">
+                <span class="mr-1">❤️</span> Retry Puzzle
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Main Content Container -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4">
+
+        <!-- Instruction Text -->
+        <div id="instruction" class="text-center transition-opacity duration-1000 mb-6 z-20">
+            <p class="text-xl md:text-2xl text-pink-300 italic font-semibold">
+                “Put the pieces together, Sona… let’s complete our love 💞”
+            </p>
+        </div>
+
+        <!-- Puzzle Area Container (Grid + Pieces) -->
+        <div id="puzzle-area">
+            <!-- Drop targets will be here -->
+            <div id="final-message">
+                <div class="heart-icon">💖</div>
+                <h2 class="text-4xl md:text-5xl font-black text-white mt-4 tracking-wider text-center">
+                    You complete me, Sona!
+                </h2>
+                <p class="text-xl font-light text-pink-200 italic mt-2">— Rishu</p>
+                <!-- Main 'Continue' Button will be dynamically added here -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-footer fixed bottom-0 w-full p-3 z-50 rounded-t-xl">
+        <div class="text-center text-sm font-medium text-gray-400 italic">
+            “Every piece of my heart belonged to you… and together we are whole 💞 — Rishu”
+        </div>
+    </footer>
+
+    <script>
+        // Use a simple square wave synth for a gentle chime effect
+        const synth = new Tone.Synth({
+            oscillator: { type: "square" },
+            envelope: {
+                attack: 0.01,
+                decay: 0.2,
+                sustain: 0.05,
+                release: 0.5
+            }
+        }).toDestination();
+        
+        // Puzzle data: 12 pieces in a 4x3 grid
+        const pieceData = [
+            { id: 0, text: "Love", initialX: 10, initialY: 10 },
+            { id: 1, text: "Trust", initialX: 80, initialY: 5 },
+            { id: 2, text: "Memories", initialX: 5, initialY: 50 },
+            { id: 3, text: "Joy", initialX: 75, initialY: 70 },
+            { id: 4, text: "Friendship", initialX: 30, initialY: 85 },
+            { id: 5, text: "Dreams", initialX: 60, initialY: 25 },
+            { id: 6, text: "Caring", initialX: 15, initialY: 30 },
+            { id: 7, text: "Laughter", initialX: 90, initialY: 40 },
+            { id: 8, text: "Future", initialX: 45, initialY: 10 },
+            { id: 9, text: "Passion", initialX: 20, initialY: 75 },
+            { id: 10, text: "Home", initialX: 65, initialY: 90 },
+            { id: 11, text: "You", initialX: 50, initialY: 50 },
+        ];
+        
+        const puzzleArea = document.getElementById('puzzle-area');
+        const finalMessage = document.getElementById('final-message');
+        const nextPageBtn = document.getElementById('next-page-btn');
+
+        let piecesPlaced = 0;
+        const totalPieces = pieceData.length;
+
+        let draggedElement = null;
+
+        // --- Helper Functions ---
+
+        function playChime(frequency) {
+            // Play a note for a correct placement
+            Tone.start();
+            synth.triggerAttackRelease(frequency, "8n");
+        }
+
+        function createTargets() {
+            for (let i = 0; i < totalPieces; i++) {
+                const target = document.createElement('div');
+                target.className = 'drop-target';
+                target.setAttribute('data-target-id', i);
+                target.addEventListener('dragover', handleDragOver);
+                target.addEventListener('dragleave', handleDragLeave);
+                target.addEventListener('drop', handleDrop);
+                puzzleArea.appendChild(target);
+            }
+        }
+        
+        function createPieces() {
+            const containerWidth = puzzleArea.offsetWidth;
+            const containerHeight = puzzleArea.offsetHeight;
+
+            // Calculate the size of a piece based on the grid layout
+            const pieceBaseWidth = containerWidth / 4; 
+            const pieceBaseHeight = containerHeight / 3;
+
+            pieceData.forEach((data, index) => {
+                const piece = document.createElement('div');
+                piece.className = 'puzzle-piece';
+                piece.id = `piece-${data.id}`;
+                piece.setAttribute('draggable', 'true');
+                piece.setAttribute('data-piece-id', data.id);
+                
+                // Add text content
+                const span = document.createElement('span');
+                span.textContent = data.text;
+                piece.appendChild(span);
+
+                // Calculate the final position for use when dropped (to snap)
+                const targetRow = Math.floor(index / 4); 
+                const targetCol = index % 4; 
+                
+                // Store final grid position data on the piece for snapping later
+                piece.setAttribute('data-target-x', targetCol * pieceBaseWidth);
+                piece.setAttribute('data-target-y', targetRow * pieceBaseHeight);
+                
+                // Initial scattered position (scaled to container size)
+                const offsetX = data.initialX / 100 * containerWidth - (piece.offsetWidth / 2);
+                const offsetY = data.initialY / 100 * containerHeight - (piece.offsetHeight / 2);
+                
+                piece.style.left = `${offsetX}px`;
+                piece.style.top = `${offsetY}px`;
+                piece.style.transform = `rotate(${Math.random() * 10 - 5}deg)`; // Initial random rotation
+
+                piece.addEventListener('dragstart', handleDragStart);
+                
+                // Add click listener for simplified touch interaction
+                piece.addEventListener('click', handleTouchPlace); 
+                puzzleArea.appendChild(piece);
+            });
+        }
+        
+        // --- Drag & Drop Handlers (Standard) ---
+        function handleDragStart(e) {
+            draggedElement = e.target.closest('.puzzle-piece');
+            if (!draggedElement || draggedElement.classList.contains('placed')) {
+                e.preventDefault();
+                return;
+            }
+            e.dataTransfer.setData('text/plain', draggedElement.getAttribute('data-piece-id'));
+            
+            // Add a class for visual feedback while dragging
+            setTimeout(() => draggedElement.style.opacity = '0.5', 0);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault(); 
+            const target = e.currentTarget;
+            if (!target.classList.contains('placed-target')) {
+                target.classList.add('drag-over');
+            }
+        }
+        
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const target = e.currentTarget;
+            target.classList.remove('drag-over');
+
+            const pieceId = parseInt(e.dataTransfer.getData('text/plain'));
+            const targetId = parseInt(target.getAttribute('data-target-id'));
+            const piece = document.querySelector(`.puzzle-piece[data-piece-id="${pieceId}"]`); // Retrieve piece element
+
+            // Check if piece ID matches target ID and target is empty
+            if (pieceId === targetId && !target.classList.contains('placed-target')) {
+                placePiece(pieceId, target, piece);
+            }
+            
+            if (piece) {
+                piece.style.opacity = '1';
+            }
+            draggedElement = null; // Reset
+        }
+        
+        // --- Touch Handlers (Simple Click-to-Place for Mobile) ---
+        let selectedPiece = null;
+
+        function handleTouchPlace(e) {
+            const piece = e.currentTarget;
+            if (piece.classList.contains('placed')) return;
+
+            // Deselect the previously selected piece visually
+            if (selectedPiece && selectedPiece !== piece) {
+                selectedPiece.style.boxShadow = '';
+                selectedPiece.style.transform = selectedPiece.getAttribute('data-initial-transform');
+            }
+
+            if (selectedPiece === piece) {
+                // If the same piece is clicked twice, deselect it
+                piece.style.boxShadow = '';
+                selectedPiece = null;
+                return;
+            }
+
+            // Select the current piece
+            selectedPiece = piece;
+            piece.setAttribute('data-initial-transform', piece.style.transform);
+            piece.style.transform = 'scale(1.2) rotate(0deg)';
+            piece.style.boxShadow = '0 0 30px #facc15';
+
+            // Find the correct target based on ID (to prevent mobile users from having to drag precisely)
+            const targetId = parseInt(piece.getAttribute('data-piece-id'));
+            const target = document.querySelector(`.drop-target[data-target-id="${targetId}"]`);
+
+            if (target && !target.classList.contains('placed-target')) {
+                 // Simulate drop immediately on the correct target
+                 placePiece(targetId, target, selectedPiece);
+                 selectedPiece = null; // Clear selection after successful placement
+            }
+        }
+
+
+        // --- Placement Logic ---
+
+        function placePiece(pieceId, target, piece) {
+            // 1. Move piece to target location and fix it
+            target.classList.add('placed-target');
+            piece.classList.add('placed');
+            piece.setAttribute('draggable', 'false'); // Disable further dragging
+            piece.removeEventListener('click', handleTouchPlace); // Disable touch placing
+
+            // Snap the piece precisely into the grid slot
+            piece.style.position = 'relative'; // Switch context to flow with the grid item
+            piece.style.top = '0';
+            piece.style.left = '0';
+            piece.style.margin = '0';
+            piece.style.width = '100%';
+            piece.style.height = '100%';
+            piece.style.boxShadow = ''; // Clear temporary selection shadow
+            piece.style.transform = 'none';
+
+            // Append the piece into the target element
+            target.innerHTML = ''; // Clear target dash
+            target.appendChild(piece);
+            
+            // 2. Sound and increment
+            playChime(440 + pieceId * 50); // Ascending scale
+            piecesPlaced++;
+            
+            // 3. Check for final effect
+            if (piecesPlaced === totalPieces) {
+                triggerFinalEffect();
+            }
+        }
+
+        // --- Final Effect ---
+
+        function triggerFinalEffect() {
+            // 1. Hide instruction
+            document.getElementById('instruction').style.opacity = 0;
+            
+            // 2. Show final message overlay
+            finalMessage.style.opacity = 1;
+            finalMessage.style.pointerEvents = 'auto'; // Make it clickable
+
+            // 3. Play a final, more elaborate chime
+            playChime(880); 
+            
+            // 4. Create and display the main 'Next' button in the center
+            const mainNextBtn = document.createElement('a');
+            mainNextBtn.href = 'page10.html';
+            mainNextBtn.textContent = 'Continue Our Story 📖';
+            mainNextBtn.className = 'mt-8 px-8 py-4 bg-yellow-400 text-purple-900 font-bold text-xl rounded-full shadow-2xl transition-all duration-300 hover:bg-yellow-300 hover:scale-105 pop-and-glow';
+            mainNextBtn.style.animationDelay = '0.5s'; 
+            finalMessage.appendChild(mainNextBtn);
+
+            // 5. Enable next page button in the NAV BAR with a visual pop
+            setTimeout(() => {
+                nextPageBtn.classList.remove('opacity-0', 'pointer-events-none');
+                nextPageBtn.classList.add('pop-and-glow'); 
+            }, 1000); 
+        }
+
+        // --- Initialization ---
+
+        window.onload = () => {
+            // Create drop targets first to establish the grid structure
+            createTargets();
+            
+            // Wait for targets to be drawn, then create pieces
+            setTimeout(() => {
+                createPieces();
+            }, 100); 
+        };
+    </script>
+</body>
+</html>

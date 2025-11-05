@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕯️ The Candle Room – Your Love Lights My World</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* ------------------------------------------------ */
+        /* BASE STYLES & ANIMATIONS */
+        /* ------------------------------------------------ */
+
+        /* Twilight Background */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0d0a1b; /* Dark Twilight */
+            color: #d1d5db; /* Light gray for text */
+            min-height: 100vh;
+            overflow: hidden; /* Prevent scrolling */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* --- Room Glow Effect (Dynamically Controlled by JS) --- */
+        #room-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            /* Initial soft twilight glow */
+            box-shadow: 0 0 100px rgba(255, 105, 180, 0.1), inset 0 0 200px rgba(0, 0, 0, 0.5);
+            transition: all 1s ease-in-out;
+        }
+
+        /* Reflective Floor Simulation */
+        #room-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(16, 12, 32, 0.9) 0%, rgba(16, 12, 32, 0.2) 80%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Navbar & Footer Glass Styles */
+        .glass-nav {
+            backdrop-filter: blur(4px);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-footer {
+            backdrop-filter: blur(4px);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Candle Specific Styles and Animations --- */
+
+        .candle-wrapper {
+            position: relative;
+            cursor: pointer;
+            perspective: 1000px;
+            z-index: 10;
+            opacity: 0.5; /* Unlit appearance */
+            transition: opacity 0.5s, transform 0.3s;
+        }
+        .candle-wrapper:hover {
+            transform: scale(1.05);
+        }
+
+        /* Candle Base (Wax) */
+        .candle-base {
+            width: 25px;
+            height: 70px;
+            background: #f7f7f7;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            position: relative;
+            margin: 0 auto;
+        }
+        /* Unlit Wick */
+        .candle-wrapper:not(.lit) .wick {
+            width: 2px;
+            height: 5px;
+            background: #333;
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Lit State Styles */
+        .candle-wrapper.lit {
+            opacity: 1;
+        }
+        
+        /* Candle Flame Animation */
+        @keyframes flicker {
+            0% { transform: scale(1); box-shadow: 0 0 8px #ffeb3b, 0 0 15px #ff9800; }
+            50% { transform: scale(0.95); box-shadow: 0 0 10px #ffc107, 0 0 20px #ff5722; }
+            100% { transform: scale(1); box-shadow: 0 0 8px #ffeb3b, 0 0 15px #ff9800; }
+        }
+        .flame {
+            width: 10px;
+            height: 20px;
+            background: radial-gradient(circle at 50% 10%, #ffe082 0%, #ffc107 50%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flicker 1s infinite alternate;
+            filter: drop-shadow(0 0 5px #ff9800);
+            z-index: 1;
+        }
+        .candle-wrapper:not(.lit) .flame {
+            display: none;
+        }
+
+        /* Reflection Effect (Simple mirror image) */
+        .reflection {
+            width: 25px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            transform: scaleY(-1);
+            filter: blur(10px);
+            margin-top: 5px;
+        }
+        .candle-wrapper:not(.lit) .reflection {
+            opacity: 0.1;
+        }
+        .candle-wrapper.lit .reflection {
+             /* Soft golden reflection */
+            background: linear-gradient(to top, rgba(255, 204, 0, 0.4), transparent);
+            filter: blur(5px);
+            opacity: 0.8;
+            transition: all 0.5s;
+        }
+
+        /* Floating Sparkles Animation */
+        @keyframes sparkle-float {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
+        }
+        .sparkle {
+            position: absolute;
+            color: gold;
+            font-size: 10px;
+            pointer-events: none;
+            animation: sparkle-float 1.5s ease-out;
+        }
+        
+        /* Heartbeat for final button */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .heartbeat {
+            animation: heartbeat 1.5s infinite ease-in-out;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="glass-nav fixed top-0 left-0 right-0 p-4 z-50 rounded-b-xl shadow-lg">
+        <div class="flex justify-start space-x-4 text-gray-200">
+            <!-- 💖 Back → Page 7 (page7.html) -->
+            <a href="page7.html" class="nav-link text-pink-400 hover:bg-pink-900/20 p-2 rounded-full transition-colors font-semibold">
+                <span class="mr-1">💖</span> Back to Dreamverse
+            </a>
+            <!-- 🔥 Replay Candles → reload page -->
+            <a href="#" onclick="window.location.reload();" class="nav-link text-red-400 hover:bg-red-900/20 p-2 rounded-full transition-colors font-semibold">
+                <span class="mr-1">🔥</span> Replay Wishes
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Room Container with Dynamic Glow -->
+    <main id="room-container">
+
+        <!-- Instruction Text -->
+        <div id="instruction" class="absolute top-24 text-center text-xl md:text-2xl text-pink-300 italic transition-opacity duration-1000 ease-in-out">
+            “Light each candle for every wish you hold in your heart for us 💖”
+        </div>
+
+        <!-- Main Message Display -->
+        <div id="message-display" class="my-8 h-20 flex items-center justify-center">
+            <p class="text-3xl md:text-4xl font-extrabold text-white text-shadow-xl transition-all duration-500 ease-in-out"></p>
+        </div>
+
+        <!-- Candles Container (Arranged in a line) -->
+        <div class="flex space-x-6 md:space-x-10 mt-16 z-20 transition-opacity duration-1000" id="candles-container">
+            <!-- Candles will be dynamically generated here -->
+        </div>
+
+        <!-- Final Glow Text (Initially hidden) -->
+        <div id="final-message" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center opacity-0 transition-opacity duration-1500 ease-in-out">
+            <h2 class="text-6xl md:text-8xl font-black text-yellow-300 glow-text mb-6 tracking-wide drop-shadow-2xl">
+                Your love lights my world, Sona 💖
+            </h2>
+            <p class="text-2xl font-light text-pink-200 italic">— Rishu</p>
+            
+            <!-- NEXT PAGE BUTTON (New Location) -->
+            <a id="next-page-btn" href="page9.html" class="inline-flex items-center justify-center px-8 py-3 mt-12 text-xl font-extrabold rounded-full text-white bg-gradient-to-r from-yellow-500 to-pink-600 hover:from-yellow-600 hover:to-pink-700 transition-all duration-500 shadow-xl shadow-pink-500/50 transform hover:scale-105 opacity-0 pointer-events-none">
+                <span class="mr-2">💫</span> Step to Next Promise
+            </a>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-footer fixed bottom-0 w-full p-3 z-50 rounded-t-xl">
+        <div class="text-center text-sm font-medium text-gray-400 italic">
+            “Every candle, every wish, every glow — all of it reminds me of you, Sona 💞 — Rishu”
+        </div>
+    </footer>
+
+    <script>
+        const wishes = [
+            "I wish for our **endless happiness** 💞",
+            "I wish to **hold your hand forever** 🫶",
+            "I wish to see **your smile every day** 😍",
+            "I wish to always **protect your heart** 💖",
+            "I wish for **laughter to fill our home** 🌸",
+            "I wish to **chase our dreams together** ✨",
+            "I wish to **love you more each day** 💕"
+        ];
+        
+        const candleContainer = document.getElementById('candles-container');
+        const roomContainer = document.getElementById('room-container');
+        const messageDisplay = document.getElementById('message-display').querySelector('p');
+        const finalMessage = document.getElementById('final-message');
+        const nextPageBtn = document.getElementById('next-page-btn'); // Now points to the button inside final-message
+        const instructionText = document.getElementById('instruction');
+
+        let litCandles = 0;
+
+        // 1. Generate Candles in the DOM
+        wishes.forEach((wish, index) => {
+            const candleWrapper = document.createElement('div');
+            candleWrapper.className = 'candle-wrapper';
+            candleWrapper.setAttribute('data-index', index);
+            candleWrapper.innerHTML = `
+                <div class="candle-base">
+                    <div class="wick"></div>
+                    <div class="flame"></div>
+                </div>
+                <div class="reflection"></div>
+            `;
+            candleWrapper.addEventListener('click', () => lightCandle(index, wish));
+            candleContainer.appendChild(candleWrapper);
+        });
+
+        // 2. Light Candle Function
+        function lightCandle(index, wish) {
+            const candle = document.querySelector(`.candle-wrapper[data-index="${index}"]`);
+            
+            // If already lit, do nothing
+            if (candle.classList.contains('lit')) {
+                // If clicked again, just display the message
+                messageDisplay.innerHTML = wish;
+                return;
+            }
+
+            // Light the candle
+            candle.classList.add('lit');
+            litCandles++;
+            
+            // Display the message/wish
+            messageDisplay.innerHTML = wish;
+
+            // Apply spark animation
+            spawnSparkles(candle);
+
+            // 3. Gradual Room Glow
+            // Calculate a new box-shadow based on the number of lit candles
+            const intensity = litCandles * 0.1; // 0.1 to 0.7
+            const glowColor = `rgba(255, 204, 0, ${intensity})`; // Golden glow
+            const shadowColor = `rgba(255, 105, 180, ${intensity / 2})`; // Pink ambient
+            
+            roomContainer.style.boxShadow = `
+                0 0 ${100 + litCandles * 20}px ${shadowColor}, 
+                inset 0 0 ${200 - litCandles * 10}px rgba(0, 0, 0, 0.5), 
+                0 0 ${50 + litCandles * 10}px ${glowColor}
+            `;
+            
+            // 4. Check for Final Effect
+            if (litCandles === wishes.length) {
+                triggerFinalEffect();
+            }
+        }
+        
+        // Sparkle generator utility
+        function spawnSparkles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 5; i++) {
+                const sparkle = document.createElement('span');
+                sparkle.className = 'sparkle';
+                sparkle.innerHTML = '✨';
+                
+                // Random position near the flame
+                sparkle.style.left = `${centerX + Math.random() * 30 - 15}px`;
+                sparkle.style.top = `${centerY - 50}px`;
+                
+                document.body.appendChild(sparkle);
+                
+                // Remove sparkle after animation ends
+                sparkle.addEventListener('animationend', () => sparkle.remove());
+            }
+        }
+
+        // 5. Final Effect Function
+        function triggerFinalEffect() {
+            // Hide instruction and current message
+            instructionText.style.opacity = 0;
+            messageDisplay.style.opacity = 0;
+            
+            // Hide candles container by fading it out
+            candleContainer.style.opacity = 0;
+
+            // Full Golden Glow on the room
+            roomContainer.style.boxShadow = `
+                0 0 150px rgba(255, 204, 0, 0.9), 
+                inset 0 0 50px rgba(0, 0, 0, 0.2), 
+                0 0 100px rgba(255, 105, 180, 0.6)
+            `;
+
+            // Display final text and button
+            setTimeout(() => {
+                finalMessage.style.opacity = 1;
+                // Show the button in its new location
+                nextPageBtn.classList.remove('opacity-0', 'pointer-events-none');
+                nextPageBtn.classList.add('heartbeat'); // Add pulse animation to button
+            }, 1000); // Wait for messages and candles to fade out
+
+            // Add a temporary animation style for the final text glow
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes final-pulse {
+                    0%, 100% { filter: drop-shadow(0 0 15px #facc15) drop-shadow(0 0 30px #f472b6); }
+                    50% { filter: drop-shadow(0 0 25px #ffc107) drop-shadow(0 0 50px #ec4899); }
+                }
+                #final-message h2 {
+                    animation: final-pulse 2s infinite ease-in-out;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    </script>
+</body>
+</html>
